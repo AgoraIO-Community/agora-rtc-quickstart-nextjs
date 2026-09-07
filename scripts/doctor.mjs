@@ -4,6 +4,10 @@ import {
   isSupportedNodeVersion,
   supportedNodeDescription,
 } from './node-support.mjs';
+import {
+  isRequiredPackageManager,
+  resolvePackageManagerSupport,
+} from './package-manager-support.mjs';
 
 const projectRoot = process.cwd();
 
@@ -16,14 +20,31 @@ if (!isSupportedNodeVersion(process.versions.node)) {
   fail(`${supportedNodeDescription} is required. Current version: ${process.versions.node}`);
 }
 
-if (!process.env.npm_config_user_agent?.includes('pnpm/9.')) {
-  fail('pnpm 9 is required. Run corepack use pnpm@9.15.9 or use the packageManager field.');
-}
-
 for (const requiredFile of ['package.json', 'pnpm-lock.yaml', 'env.local.example']) {
   if (!fs.existsSync(path.join(projectRoot, requiredFile))) {
     fail(`Missing required file: ${requiredFile}`);
   }
+}
+
+let packageManagerSupport;
+try {
+  const packageManifest = JSON.parse(
+    fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'),
+  );
+  packageManagerSupport = resolvePackageManagerSupport(packageManifest.packageManager);
+} catch (error) {
+  fail(`Invalid package manager contract: ${error.message}`);
+}
+
+if (
+  !isRequiredPackageManager(
+    process.env.npm_config_user_agent,
+    packageManagerSupport.requirement,
+  )
+) {
+  fail(
+    `${packageManagerSupport.requirement.spec} is required. Run it directly or use: ${packageManagerSupport.fallbackCommands.doctor}`,
+  );
 }
 
 const envPath = path.join(projectRoot, '.env.local');

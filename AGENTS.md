@@ -98,7 +98,7 @@ Do not mark implementation work complete without tests.
 ## Commands
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm run doctor
 pnpm dev
 pnpm run lint
@@ -107,6 +107,11 @@ pnpm test
 pnpm run build
 pnpm run verify
 ```
+
+If pnpm 9.15.9 is unavailable, use the package without a global install:
+`npx --yes pnpm@9.15.9 <command>`. For example, install with
+`npx --yes pnpm@9.15.9 install --frozen-lockfile` and start with
+`npx --yes pnpm@9.15.9 dev`.
 
 Docker commands and environment ownership are documented in README.
 
