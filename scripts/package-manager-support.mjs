@@ -8,16 +8,28 @@ export function resolvePackageManagerSupport(packageManager) {
   return {
     requirement: Object.freeze({ name, version, spec }),
     fallbackCommands: Object.freeze({
-      install: `npx --yes ${spec} install --frozen-lockfile`,
-      doctor: `npx --yes ${spec} run doctor`,
-      dev: `npx --yes ${spec} dev`,
-      verify: `npx --yes ${spec} run verify`,
+      install: 'npm install --package-lock=false',
+      doctor: 'npm run doctor',
+      dev: 'npm run dev',
+      verify: 'npm run verify',
     }),
   };
 }
 
-export function isRequiredPackageManager(userAgent, requirement) {
-  return new RegExp(`(?:^|\\s)${requirement.name}/${requirement.version}(?:\\s|$)`).test(
-    userAgent ?? '',
-  );
+export function detectPackageManager(userAgent, requirement) {
+  const value = userAgent ?? '';
+  if (
+    new RegExp(`(?:^|\\s)${requirement.name}/${requirement.version}(?:\\s|$)`).test(
+      value,
+    )
+  ) {
+    return { name: requirement.name, version: requirement.version };
+  }
+
+  const npmMatch = /(?:^|\s)npm\/([0-9]+\.[0-9]+\.[0-9]+)(?:\s|$)/.exec(value);
+  if (npmMatch) {
+    return { name: 'npm', version: npmMatch[1] };
+  }
+
+  return null;
 }

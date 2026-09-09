@@ -4,8 +4,8 @@
 
 ## Prerequisites
 
-- Node.js 22.x or 24.x and pnpm 9.15.9; both Node lines run in CI
-- npm/npx from Node.js when pnpm 9.15.9 is not already available
+- Node.js 22.x or 24.x; both Node lines run in CI
+- pnpm 9.15.9 preferred, or npm from the supported Node.js installation
 - Docker for image build and startup verification
 - an Agora App ID and App Certificate for live RTC
 - browser camera and microphone permission for media checks
@@ -30,12 +30,12 @@ cp env.local.example .env.local
 pnpm run doctor
 ```
 
-Fallback without a global pnpm installation:
+Fallback when pnpm 9.15.9 is unavailable:
 
 ```bash
-npx --yes pnpm@9.15.9 install --frozen-lockfile
+npm install --package-lock=false
 cp env.local.example .env.local
-npx --yes pnpm@9.15.9 run doctor
+npm run doctor
 ```
 
 ## Development

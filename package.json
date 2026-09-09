@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
+    "verify": "eslint . && tsc --noEmit && vitest run && next build"
   },
   "dependencies": {
     "agora-rtc-sdk-ng": "4.24.3",

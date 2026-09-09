@@ -9,7 +9,7 @@ the same room URL from another independent client for complete RTC media.
 ## Prerequisites
 
 - Node.js 22.x or 24.x (both tested in CI; Node 22 is the default in `.nvmrc`)
-- pnpm 9.15.9, or npm/npx from Node.js for the zero-global-install fallback
+- pnpm 9.15.9 (preferred), or npm from the supported Node.js installation
 - An Agora project with an App ID and primary App Certificate
 - A supported browser with camera and microphone permission for live RTC
 - Docker for the container workflow
@@ -21,11 +21,11 @@ pnpm install --frozen-lockfile
 cp env.local.example .env.local
 ```
 
-If `pnpm --version` is unavailable or is not `9.15.9`, use the pinned package
-through npx instead of installing or replacing a global pnpm:
+If `pnpm --version` is unavailable or is not `9.15.9`, use npm without
+creating a second lockfile:
 
 ```bash
-npx --yes pnpm@9.15.9 install --frozen-lockfile
+npm install --package-lock=false
 cp env.local.example .env.local
 ```
 
@@ -36,11 +36,11 @@ pnpm run doctor
 pnpm dev
 ```
 
-With the npx fallback, run the same scripts as:
+With the npm fallback, run the same scripts as:
 
 ```bash
-npx --yes pnpm@9.15.9 run doctor
-npx --yes pnpm@9.15.9 dev
+npm run doctor
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000), select **Create Room**,
@@ -57,7 +57,8 @@ cp env.local.example .env.local
 ```
 
 Add credentials to `.env.local`, run `pnpm run doctor`, and start with
-`pnpm dev`. The repository does not create or bind an Agora project for you.
+`pnpm dev`. If pnpm is unavailable, use the npm commands above. The repository
+does not create or bind an Agora project for you.
 
 ## Environment Variables
 
@@ -157,6 +158,9 @@ pnpm run build         # production build
 pnpm run verify        # lint + typecheck + test + build
 ```
 
+Every command above also works through npm by replacing `pnpm` with `npm run`
+for scripts and using `npm install --package-lock=false` for setup.
+
 ## Architecture
 
 The browser owns UI state, local devices, and one RTC client. The Next.js Node
@@ -183,7 +187,7 @@ Docker, and production boundaries.
 ## Troubleshooting
 
 - **Credentials are not configured:** confirm both `.env.local` values are non-empty, then restart Next.js.
-- **pnpm is missing or has the wrong version:** use `npx --yes pnpm@9.15.9 <command>`; do not replace a working global pnpm.
+- **pnpm is missing or has the wrong version:** use `npm install --package-lock=false`, then run scripts with `npm run <script>`.
 - **Camera or microphone permission was denied:** allow the site in browser permissions and retry device setup.
 - **Only one media type works:** audio-only or video-only join is supported when one device is unavailable.
 - **No remote video:** confirm both clients use the same room URL and the remote camera is enabled.

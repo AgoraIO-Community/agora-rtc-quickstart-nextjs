@@ -5,7 +5,7 @@ import {
   supportedNodeDescription,
 } from './node-support.mjs';
 import {
-  isRequiredPackageManager,
+  detectPackageManager,
   resolvePackageManagerSupport,
 } from './package-manager-support.mjs';
 
@@ -36,14 +36,9 @@ try {
   fail(`Invalid package manager contract: ${error.message}`);
 }
 
-if (
-  !isRequiredPackageManager(
-    process.env.npm_config_user_agent,
-    packageManagerSupport.requirement,
-  )
-) {
+if (!detectPackageManager(process.env.npm_config_user_agent, packageManagerSupport.requirement)) {
   fail(
-    `${packageManagerSupport.requirement.spec} is required. Run it directly or use: ${packageManagerSupport.fallbackCommands.doctor}`,
+    `${packageManagerSupport.requirement.spec} or npm from a supported Node.js installation is required. Run: ${packageManagerSupport.fallbackCommands.doctor}`,
   );
 }
 

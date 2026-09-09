@@ -2,10 +2,11 @@
 
 ## Development Setup
 
-Use Node.js 22.x or 24.x and pnpm 9.15.9. Both Node LTS lines run in CI; `.nvmrc`
-selects Node 22 as the default. Follow [README.md](README.md) to install
-dependencies and create `.env.local`. Real credentials are needed only for live
-RTC checks; static checks and builds may use obviously synthetic values.
+Use Node.js 22.x or 24.x with pnpm 9.15.9 preferred and npm supported for
+First Success. Both Node LTS lines run in CI; `.nvmrc` selects Node 22 as the
+default. Follow [README.md](README.md) to install dependencies and create
+`.env.local`. Real credentials are needed only for live RTC checks; static
+checks and builds may use obviously synthetic values.
 
 ## Development Workflow
 

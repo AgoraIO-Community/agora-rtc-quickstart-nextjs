@@ -108,10 +108,9 @@ pnpm run build
 pnpm run verify
 ```
 
-If pnpm 9.15.9 is unavailable, use the package without a global install:
-`npx --yes pnpm@9.15.9 <command>`. For example, install with
-`npx --yes pnpm@9.15.9 install --frozen-lockfile` and start with
-`npx --yes pnpm@9.15.9 dev`.
+If pnpm 9.15.9 is unavailable, install with
+`npm install --package-lock=false` and run scripts with `npm run <script>`.
+Do not invoke pnpm through npx or generate `package-lock.json`.
 
 Docker commands and environment ownership are documented in README.
 

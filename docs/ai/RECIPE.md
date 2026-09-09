@@ -82,8 +82,9 @@ pnpm run doctor
 pnpm dev
 ```
 
-When pnpm 9.15.9 is unavailable, replace each pnpm invocation with
-`npx --yes pnpm@9.15.9`; this uses the pinned package without a global install.
+When pnpm 9.15.9 is unavailable, install with
+`npm install --package-lock=false` and run scripts with `npm run <script>`.
+Do not invoke pnpm through npx or create a second lockfile.
 
 Copy the invite link before joining, then join once for the supported single-client
 state. Use the exact same room URL from a second independent client and verify

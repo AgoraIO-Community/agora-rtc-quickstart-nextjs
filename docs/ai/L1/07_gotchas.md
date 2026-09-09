@@ -5,8 +5,8 @@
 ## Setup Pitfalls
 
 - Node or pnpm versions can drift from `.nvmrc` and `packageManager`.
-- A missing or mismatched pnpm does not require a global install; use
-  `npx --yes pnpm@9.15.9 <command>`.
+- A missing or mismatched pnpm does not require installing pnpm; use
+  `npm install --package-lock=false` and `npm run <script>`.
 - Empty environment values fail doctor and token requests.
 - Browser permission denial can leave only one or no local media tracks.
 - Two browser contexts may be unable to capture one camera simultaneously.
