@@ -19,8 +19,8 @@ subscription; remote video is exposed to the view after subscription.
 ## Environment Contract
 
 `NEXT_PUBLIC_AGORA_APP_ID` is the public project identifier.
-`NEXT_AGORA_APP_CERTIFICATE` is server-only. Docker requires the public App ID at
-build and both values at runtime; the certificate is never a build argument.
+`NEXT_AGORA_APP_CERTIFICATE` is server-only. Docker receives both values only
+at runtime; neither credential is a build argument.
 
 ## External Services
 

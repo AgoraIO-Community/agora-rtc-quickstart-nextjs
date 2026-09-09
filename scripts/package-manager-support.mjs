@@ -11,7 +11,6 @@ export function resolvePackageManagerSupport(packageManager) {
       install: 'npm install --package-lock=false',
       doctor: 'npm run doctor',
       dev: 'npm run dev',
-      verify: 'npm run verify',
     }),
   };
 }

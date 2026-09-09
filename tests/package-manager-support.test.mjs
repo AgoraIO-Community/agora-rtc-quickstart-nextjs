@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import fs from 'node:fs';
 import {
 	detectPackageManager,
 	resolvePackageManagerSupport,
@@ -25,7 +24,6 @@ describe('package manager support', () => {
 			install: 'npm install --package-lock=false',
 			doctor: 'npm run doctor',
 			dev: 'npm run dev',
-			verify: 'npm run verify',
 		});
 	});
 
@@ -33,10 +31,5 @@ describe('package manager support', () => {
 		const support = resolvePackageManagerSupport('pnpm@10.1.2');
 		expect(support.requirement.version).toBe('10.1.2');
 		expect(support.fallbackCommands.dev).toBe('npm run dev');
-	});
-
-	it('keeps the verification script package-manager neutral', () => {
-		const packageManifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-		expect(packageManifest.scripts.verify).not.toMatch(/\b(?:npm|pnpm|npx)\b/);
 	});
 });

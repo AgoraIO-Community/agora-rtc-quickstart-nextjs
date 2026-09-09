@@ -16,7 +16,7 @@ Copy `env.local.example` to `.env.local`.
 
 | Variable | Exposure | Owner |
 | --- | --- | --- |
-| `NEXT_PUBLIC_AGORA_APP_ID` | Public project identifier | Build and Next.js runtime |
+| `NEXT_PUBLIC_AGORA_APP_ID` | Public project identifier | Next.js runtime |
 | `NEXT_AGORA_APP_CERTIFICATE` | Server-only secret | Next.js token route runtime |
 
 Synthetic values are sufficient for static checks and packaging. Real values

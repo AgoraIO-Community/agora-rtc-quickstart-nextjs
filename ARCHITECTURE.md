@@ -94,9 +94,9 @@ is public unless access controls are added.
 ### Docker
 
 The multi-stage image builds Next.js `standalone` output and runs `server.js` as
-a non-root user on port 3000. The public App ID is supplied at build time and
-must match the runtime value. Both variables are supplied to the container at
-runtime; the certificate is never a build argument.
+a non-root user on port 3000. The image contains no Agora credentials. Both
+the public App ID and server-only certificate are supplied to the container at
+runtime.
 
 The container is stateless. It does not store rooms, users, media, or tokens.
 

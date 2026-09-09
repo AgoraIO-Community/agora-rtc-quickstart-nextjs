@@ -43,9 +43,11 @@ npm run doctor
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000), select **Create Room**,
-copy the invite link, confirm the automatically selected devices, and select
-**Join Call**. Manual device selection is available from **Select devices**.
+Open the exact **Local** URL printed by the development server. The default is
+[http://localhost:3000](http://localhost:3000), but Next.js may select another
+available port when 3000 is already in use. Select **Create Room**, copy the
+invite link, confirm the automatically selected devices, and select **Join
+Call**. Manual device selection is available from **Select devices**.
 
 ## Working From A Clone
 
@@ -68,8 +70,7 @@ does not create or bind an Agora project for you.
 | `NEXT_AGORA_APP_CERTIFICATE` | Yes | Next.js server only | Secret used by `POST /api/token`; never expose, log, bundle, or bake it into an image. |
 
 Local development reads `.env.local`. Vercel uses project environment
-variables. Docker receives the public App ID at build and runtime and the App
-Certificate only at runtime.
+variables. Docker receives both values only when the container starts.
 
 ## Use The Quickstart
 
@@ -158,9 +159,6 @@ pnpm run build         # production build
 pnpm run verify        # lint + typecheck + test + build
 ```
 
-Every command above also works through npm by replacing `pnpm` with `npm run`
-for scripts and using `npm install --package-lock=false` for setup.
-
 ## Architecture
 
 The browser owns UI state, local devices, and one RTC client. The Next.js Node
@@ -193,7 +191,7 @@ Docker, and production boundaries.
 - **No remote video:** confirm both clients use the same room URL and the remote camera is enabled.
 - **No remote audio:** confirm the remote microphone is enabled and browser playback is not muted.
 - **Two local tabs cannot use the camera:** turn off one camera or use another browser or device.
-- **Container starts but RTC fails:** verify build-time and runtime App IDs match and runtime credentials are real; HTTP startup alone is not RTC evidence.
+- **Container starts but RTC fails:** verify both runtime credentials are present and valid; HTTP startup alone is not RTC evidence.
 
 ## Deployment
 
@@ -207,15 +205,13 @@ for complete media evidence.
 
 ### Docker
 
-Build with the public App ID:
+Build the reusable image without Agora credentials:
 
 ```bash
-docker build \
-  --build-arg NEXT_PUBLIC_AGORA_APP_ID=your_app_id \
-  --tag agora-rtc-nextjs-quickstart .
+docker build --tag agora-rtc-nextjs-quickstart .
 ```
 
-Run with the same App ID and the server-only certificate:
+Inject the App ID and server-only certificate when the container starts:
 
 ```bash
 docker run --rm --publish 3000:3000 \

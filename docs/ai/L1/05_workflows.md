@@ -29,7 +29,7 @@ and `06_interfaces.md` in one local change.
 ## Deploy
 
 For Vercel, configure both environment values and verify the deployed workflow.
-For Docker, build with the public App ID, run with both runtime values, verify
+For Docker, build without credentials, run with both runtime values, verify
 HTTP startup, then perform RTC checks separately with real credentials.
 
 ## Diagnose A Failure
