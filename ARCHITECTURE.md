@@ -79,6 +79,8 @@ created only after join, so opening an invitation does not contend for devices.
 Audio and video publication events remain separate. A missing camera or
 microphone does not block the other available media type. Device changes refresh
 the available list; manual selection is available during the call.
+Agora SDK `exception` events report quality degradation and recovery; they are
+not routed to the application's fatal error banner.
 
 ## Runtime Modes
 

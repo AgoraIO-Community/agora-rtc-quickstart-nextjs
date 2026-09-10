@@ -78,6 +78,7 @@ function setup() {
     onLocalMedia,
     onRemoteUsers,
     onConnectionState,
+    onError,
   };
 }
 
@@ -129,6 +130,15 @@ describe('RtcSession', () => {
       'rtc1.QWxpY2U.0123456789abcdef',
     );
     expect(client.renewToken).toHaveBeenCalledWith('renewed-token');
+  });
+
+  it('does not route SDK quality exceptions to the application error UI', async () => {
+    const { session, client, onError } = setup();
+
+    await session.join();
+
+    expect(client.on).not.toHaveBeenCalledWith('exception', expect.any(Function));
+    expect(onError).not.toHaveBeenCalled();
   });
 
   it('cleans up once in unpublish, stop/close, leave order', async () => {

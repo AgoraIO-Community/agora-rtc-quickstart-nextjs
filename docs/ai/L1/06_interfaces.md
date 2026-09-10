@@ -13,7 +13,9 @@ account returns 400. Missing configuration or token failure returns a generic
 ## Events And Media
 
 `RtcSession` handles `user-joined`, `user-published`, `user-unpublished`,
-`user-left`, `connection-state-change`, token expiry warnings, and `exception`.
+`user-left`, `connection-state-change`, and token expiry warnings. SDK
+`exception` events are quality and recovery signals, not application errors,
+so they remain in SDK diagnostics instead of the red error UI.
 Audio and video publications arrive independently. Remote audio is played after
 subscription; remote video is exposed to the view after subscription.
 

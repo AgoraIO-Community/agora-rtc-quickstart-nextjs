@@ -90,10 +90,6 @@ export class RtcSession {
     }
   };
 
-  private readonly handleException = (event: { code: number; msg: string }) => {
-    this.onError(new Error(`RTC exception ${event.code}: ${event.msg}`));
-  };
-
   private emitRemoteUsers() {
     this.onRemoteUsers([...this.client.remoteUsers]);
   }
@@ -107,7 +103,6 @@ export class RtcSession {
     this.client.on('connection-state-change', this.handleConnectionStateChange);
     this.client.on('token-privilege-will-expire', this.handleTokenWillExpire);
     this.client.on('token-privilege-did-expire', this.handleTokenWillExpire);
-    this.client.on('exception', this.handleException);
     this.listenersRegistered = true;
   }
 
@@ -120,7 +115,6 @@ export class RtcSession {
     this.client.off('connection-state-change', this.handleConnectionStateChange);
     this.client.off('token-privilege-will-expire', this.handleTokenWillExpire);
     this.client.off('token-privilege-did-expire', this.handleTokenWillExpire);
-    this.client.off('exception', this.handleException);
     this.listenersRegistered = false;
   }
 
