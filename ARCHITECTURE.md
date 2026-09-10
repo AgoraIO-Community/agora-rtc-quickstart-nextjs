@@ -27,6 +27,8 @@ Agora RTC channel: UUID room ID
 canonical lowercase UUID and mounts `components/room-experience.tsx`.
 `components/room-experience-loader.tsx` keeps the Agora SDK outside server-side
 rendering while allowing each browser tab to load the client before Join Call.
+Development uses the Next.js 16 default Turbopack runtime; the Webpack dev
+runtime can reload an active room when another browser first compiles `/`.
 
 ## Request And Media Flow
 

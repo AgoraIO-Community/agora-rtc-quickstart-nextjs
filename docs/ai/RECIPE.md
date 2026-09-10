@@ -59,6 +59,8 @@ token behavior from memory.
 - Audio and video publication events are independent.
 - One missing media device does not block the other available media type.
 - Local devices are not requested before Join Call; system-selected devices are the default path afterward.
+- Development uses the Next.js default Turbopack runtime so cold cross-browser
+  route compilation does not reload an active RTC room.
 
 ## Stable Contracts
 

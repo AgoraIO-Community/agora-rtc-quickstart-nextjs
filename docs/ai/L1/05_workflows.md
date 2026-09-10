@@ -11,6 +11,10 @@ during the call only when manual device selection is needed. For complete RTC
 success, join the exact room with another name from a second tab or independent client
 and verify audio and video receipt both ways.
 
+Use the default `pnpm dev` command for development. Do not add `--webpack`:
+first-time cross-browser route compilation in that runtime can reload the room
+client and clear an active in-memory RTC session.
+
 ## Modify The RTC Core Flow
 
 Inspect `lib/rtc-session.ts`, `lib/token.ts`, the token route, and their tests.

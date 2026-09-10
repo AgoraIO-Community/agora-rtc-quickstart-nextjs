@@ -10,6 +10,8 @@
 - Empty environment values fail doctor and token requests.
 - Browser permission denial after Join Call can leave only one or no local media tracks.
 - Browser and operating-system device sharing determines whether two tabs can capture the same physical camera and microphone.
+- `next dev --webpack` can reload an active room when another browser first
+  compiles `/`; keep the default Turbopack development runtime.
 
 ## Runtime Pitfalls
 

@@ -16,10 +16,10 @@ See [ARCHITECTURE.md](../../../ARCHITECTURE.md) for the canonical topology.
 
 The browser exposes the room URL and display-name form without accessing local
 devices. After an explicit join action it requests a scoped account token,
-requests a token, registers events, joins, creates and publishes local tracks,
-and subscribes to
+registers events, joins, creates and publishes local tracks, and subscribes to
 audio and video independently. Renewal reuses room and user account. Cleanup
-unregisters, unpublishes, stops, closes, and leaves.
+unregisters, unpublishes, stops, closes, and leaves. Development uses the Next.js
+default Turbopack runtime to preserve this client state across cold route compilation.
 
 ## Ownership Boundaries
 

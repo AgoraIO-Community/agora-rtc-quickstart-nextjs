@@ -73,6 +73,8 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 9. A missing camera or microphone must not block the other available media type.
 10. Do not add RTM, chat, AI agents, recording, screen sharing, authentication, or persistence without an explicit scope decision.
 11. Do not request camera or microphone access before the user selects **Join Call**.
+12. Keep `pnpm dev` on the Next.js default Turbopack runtime; forcing Webpack can
+    reload active room clients during cold cross-browser route compilation.
 
 ## UI Contract
 

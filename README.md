@@ -49,6 +49,10 @@ available port when 3000 is already in use. Select **Create Room**, copy the
 invite link, enter the name other participants should see, and select **Join
 Call**. Camera and microphone access begins only after that action.
 
+`pnpm dev` uses the Next.js 16 default Turbopack runtime. Do not force Webpack:
+its cold cross-browser route compilation can reload an active room client and
+clear the in-memory RTC session.
+
 ## Working From A Clone
 
 ```bash
