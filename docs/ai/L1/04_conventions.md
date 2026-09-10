@@ -10,9 +10,10 @@ ESLint rules. Keep RTC SDK access in client modules and secrets in server module
 ## Runtime Patterns
 
 Register events before join. Handle `user-published` separately for audio and
-video. Keep one client per mounted room, one room/UID across token and renewal,
-and cleanup idempotent. Preserve partial media when one device fails. Surface
-generic user errors without credential data.
+video. Keep one client per mounted room and one room/user account across token
+and renewal. Join before creating local tracks, keep cleanup idempotent, and
+preserve partial media when one device fails. Surface generic user errors
+without credential data.
 
 ## Testing Patterns
 

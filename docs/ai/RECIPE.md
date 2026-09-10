@@ -10,7 +10,7 @@ invariants:
   - id: server-only-certificate
     summary: Keep the App Certificate in the server process.
   - id: rtc-identity-consistency
-    summary: Use one room ID and numeric UID for token, join, and renewal.
+    summary: Use one room ID and string user account for token, join, and renewal.
   - id: rtc-resource-cleanup
     summary: Register before join and release every owned track and client.
 stable_contracts:
@@ -31,8 +31,8 @@ stable_contracts:
 ## Recipe Scope
 
 The baseline creates UUID room URLs, exposes invitation actions before join and
-while waiting, prepares partial local media from system-selected devices, issues
-server-side RTC publisher tokens, joins and publishes on explicit user action,
+while waiting, accepts a participant display name, issues server-side RTC
+publisher tokens, joins and then prepares and publishes local media on explicit user action,
 subscribes to remote audio and video, renews tokens, and releases resources.
 
 ## Baseline Implementation Guidance
@@ -54,15 +54,15 @@ token behavior from memory.
 ## Invariants
 
 - `server-only-certificate`: only the Next.js server reads `NEXT_AGORA_APP_CERTIFICATE`.
-- `rtc-identity-consistency`: token issue, join, and renewal use one room ID and numeric UID.
+- `rtc-identity-consistency`: token issue, join, and renewal use one room ID and string user account.
 - `rtc-resource-cleanup`: register handlers before join; unpublish, stop, close, and leave during idempotent cleanup.
 - Audio and video publication events are independent.
 - One missing media device does not block the other available media type.
-- System-selected devices are the default path; manual device selection remains optional.
+- Local devices are not requested before Join Call; system-selected devices are the default path afterward.
 
 ## Stable Contracts
 
-- `POST /api/token` accepts `{ roomId, uid? }` and returns `appId`, `roomId`, `uid`, `token`, and `expiresIn` under `Cache-Control: no-store`.
+- `POST /api/token` accepts `{ roomId, displayName }` initially or `{ roomId, userAccount }` for renewal and returns `appId`, `roomId`, `userAccount`, `token`, and `expiresIn` under `Cache-Control: no-store`.
 - `.env.local` uses `NEXT_PUBLIC_AGORA_APP_ID` and server-only `NEXT_AGORA_APP_CERTIFICATE`.
 - `pnpm run verify` is the canonical lint, typecheck, test, and build command.
 - Docker runs standalone Next.js on port 3000 and never bakes the certificate into the image.

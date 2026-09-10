@@ -5,10 +5,11 @@
 ## First Success
 
 Install, copy the environment example, add credentials, run doctor, start the
-app, create a room, copy its invite link, and join with the automatically selected
-devices. Use settings only when manual device selection is needed. For complete
-RTC success, join the exact room from a second independent client and verify audio
-and video receipt both ways.
+app, create a room, copy its invite link, enter a display name, and join. Device
+access starts only after Join Call and uses system-selected devices. Use settings
+during the call only when manual device selection is needed. For complete RTC
+success, join the exact room with another name from a second tab or independent client
+and verify audio and video receipt both ways.
 
 ## Modify The RTC Core Flow
 
@@ -34,7 +35,7 @@ HTTP startup, then perform RTC checks separately with real credentials.
 
 ## Diagnose A Failure
 
-Identify the exact client, room, UID, timestamp, phase, and media direction.
+Identify the exact client, room, user account, timestamp, phase, and media direction.
 Separate environment, HTTP/token, join, publish, subscribe, playback, and cleanup
 evidence before naming a cause. Do not use health or static checks as media proof.
 

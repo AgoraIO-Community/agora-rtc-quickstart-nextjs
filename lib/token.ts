@@ -6,7 +6,7 @@ type TokenBuilder = (
   appId: string,
   appCertificate: string,
   roomId: string,
-  uid: number,
+  userAccount: string,
   role: number,
   tokenExpire: number,
   privilegeExpire: number,
@@ -16,7 +16,7 @@ type BuildRtcTokenInput = {
   appId: string;
   appCertificate: string;
   roomId: string;
-  uid: number;
+  userAccount: string;
   builder?: TokenBuilder;
 };
 
@@ -24,19 +24,19 @@ export function buildRtcToken({
   appId,
   appCertificate,
   roomId,
-  uid,
+  userAccount,
   builder,
 }: BuildRtcTokenInput): string {
   const build =
     builder ??
     ((...args: Parameters<TokenBuilder>) =>
-      AgoraToken.RtcTokenBuilder.buildTokenWithUid(...args));
+      AgoraToken.RtcTokenBuilder.buildTokenWithUserAccount(...args));
 
   return build(
     appId,
     appCertificate,
     roomId,
-    uid,
+    userAccount,
     AgoraToken.RtcRole.PUBLISHER,
     TOKEN_EXPIRATION_SECONDS,
     TOKEN_EXPIRATION_SECONDS,

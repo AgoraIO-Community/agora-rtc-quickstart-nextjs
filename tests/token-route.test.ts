@@ -6,14 +6,14 @@ const APP_ID = '0123456789abcdef0123456789abcdef';
 const APP_CERTIFICATE = 'fedcba9876543210fedcba9876543210';
 
 describe('RTC token construction', () => {
-  it('uses RTC-only publisher privileges and relative expiration seconds', () => {
+  it('uses an RTC user account with publisher privileges and relative expiration seconds', () => {
     const builder = vi.fn(() => 'rtc-token');
 
     const token = buildRtcToken({
       appId: APP_ID,
       appCertificate: APP_CERTIFICATE,
       roomId: ROOM_ID,
-      uid: 1234,
+      userAccount: 'rtc1.QWxpY2U.0123456789abcdef',
       builder,
     });
 
@@ -22,7 +22,7 @@ describe('RTC token construction', () => {
       APP_ID,
       APP_CERTIFICATE,
       ROOM_ID,
-      1234,
+      'rtc1.QWxpY2U.0123456789abcdef',
       1,
       3600,
       3600,
@@ -36,13 +36,13 @@ describe('POST /api/token', () => {
     process.env.NEXT_AGORA_APP_CERTIFICATE = APP_CERTIFICATE;
   });
 
-  it('generates an initial UID and returns a no-store response', async () => {
+  it('generates an initial user account and returns a no-store response', async () => {
     const { POST, runtime } = await import('@/app/api/token/route');
     const response = await POST(
       new Request('http://localhost/api/token', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ roomId: ROOM_ID }),
+        body: JSON.stringify({ roomId: ROOM_ID, displayName: 'Alice' }),
       }),
     );
     const body = await response.json();
@@ -55,38 +55,48 @@ describe('POST /api/token', () => {
       roomId: ROOM_ID,
       expiresIn: 3600,
     });
-    expect(body.uid).toBeGreaterThan(0);
+    expect(body.userAccount).toMatch(/^rtc1\./);
     expect(body.token).toEqual(expect.any(String));
   });
 
-  it('preserves the requested UID for renewal', async () => {
+  it('preserves the requested user account for renewal', async () => {
     const { POST } = await import('@/app/api/token/route');
+    const userAccount = 'rtc1.QWxpY2U.0123456789abcdef';
     const response = await POST(
       new Request('http://localhost/api/token', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ roomId: ROOM_ID, uid: 9876 }),
+        body: JSON.stringify({ roomId: ROOM_ID, userAccount }),
       }),
     );
     const body = await response.json();
 
     expect(response.status).toBe(200);
-    expect(body.uid).toBe(9876);
+    expect(body.userAccount).toBe(userAccount);
   });
 
-  it('rejects invalid room IDs and UIDs', async () => {
+  it('rejects invalid room IDs, display names, and user accounts', async () => {
     const { POST } = await import('@/app/api/token/route');
     const response = await POST(
       new Request('http://localhost/api/token', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ roomId: '../bad-room', uid: -1 }),
+        body: JSON.stringify({ roomId: '../bad-room', displayName: '   ' }),
       }),
     );
     const body = await response.json();
 
     expect(response.status).toBe(400);
-    expect(body).toEqual({ error: 'Invalid room ID or UID.' });
+    expect(body).toEqual({ error: 'Invalid room ID or participant identity.' });
+
+    const malformedRenewal = await POST(
+      new Request('http://localhost/api/token', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ roomId: ROOM_ID, userAccount: 'not-an-account' }),
+      }),
+    );
+    expect(malformedRenewal.status).toBe(400);
   });
 
   it('fails without exposing missing credential names or values', async () => {
@@ -96,7 +106,7 @@ describe('POST /api/token', () => {
       new Request('http://localhost/api/token', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ roomId: ROOM_ID }),
+        body: JSON.stringify({ roomId: ROOM_ID, displayName: 'Alice' }),
       }),
     );
     const body = await response.json();

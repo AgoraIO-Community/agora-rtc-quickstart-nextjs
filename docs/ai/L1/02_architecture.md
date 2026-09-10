@@ -5,7 +5,7 @@
 ## Components
 
 - Next.js App Router pages and API route
-- React client components for pre-join and call state
+- React client components for named join and call state
 - Agora RTC Web SDK browser client
 - server-side `agora-token` builder
 - Agora RTC channel transport
@@ -14,11 +14,12 @@ See [ARCHITECTURE.md](../../../ARCHITECTURE.md) for the canonical topology.
 
 ## Data And Event Flow
 
-The browser initializes available local media from system-selected devices and
-exposes the room URL for invitation. After an explicit join action it requests a
-scoped token, registers events, joins, publishes local tracks, and subscribes to
-audio and video independently. Renewal reuses room and UID. Cleanup unregisters,
-unpublishes, stops, closes, and leaves.
+The browser exposes the room URL and display-name form without accessing local
+devices. After an explicit join action it requests a scoped account token,
+requests a token, registers events, joins, creates and publishes local tracks,
+and subscribes to
+audio and video independently. Renewal reuses room and user account. Cleanup
+unregisters, unpublishes, stops, closes, and leaves.
 
 ## Ownership Boundaries
 

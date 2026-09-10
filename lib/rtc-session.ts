@@ -13,10 +13,11 @@ type RtcSessionOptions = {
   sdk: RtcSdk;
   appId: string;
   roomId: string;
-  uid: number;
+  userAccount: string;
   token: string;
-  media: LocalMedia;
-  renewToken: (roomId: string, uid: number) => Promise<string>;
+  createMedia: () => Promise<LocalMedia>;
+  renewToken: (roomId: string, userAccount: string) => Promise<string>;
+  onLocalMedia: (media: LocalMedia) => void;
   onRemoteUsers: (users: IAgoraRTCRemoteUser[]) => void;
   onConnectionState: (state: ConnectionState) => void;
   onError: (error: Error) => void;
@@ -26,25 +27,28 @@ export class RtcSession {
   private readonly client: IAgoraRTCClient;
   private readonly appId: string;
   private readonly roomId: string;
-  private readonly uid: number;
+  private readonly userAccount: string;
   private readonly token: string;
-  private readonly media: LocalMedia;
+  private readonly createMedia: RtcSessionOptions['createMedia'];
   private readonly renewTokenCallback: RtcSessionOptions['renewToken'];
+  private readonly onLocalMedia: RtcSessionOptions['onLocalMedia'];
   private readonly onRemoteUsers: RtcSessionOptions['onRemoteUsers'];
   private readonly onConnectionState: RtcSessionOptions['onConnectionState'];
   private readonly onError: RtcSessionOptions['onError'];
   private listenersRegistered = false;
   private joined = false;
+  private media: LocalMedia | null = null;
   private cleanupPromise: Promise<void> | null = null;
 
   constructor(options: RtcSessionOptions) {
     this.client = options.sdk.createClient({ mode: 'rtc', codec: 'vp8' });
     this.appId = options.appId;
     this.roomId = options.roomId;
-    this.uid = options.uid;
+    this.userAccount = options.userAccount;
     this.token = options.token;
-    this.media = options.media;
+    this.createMedia = options.createMedia;
     this.renewTokenCallback = options.renewToken;
+    this.onLocalMedia = options.onLocalMedia;
     this.onRemoteUsers = options.onRemoteUsers;
     this.onConnectionState = options.onConnectionState;
     this.onError = options.onError;
@@ -79,7 +83,7 @@ export class RtcSession {
 
   private readonly handleTokenWillExpire = async () => {
     try {
-      const token = await this.renewTokenCallback(this.roomId, this.uid);
+      const token = await this.renewTokenCallback(this.roomId, this.userAccount);
       await this.client.renewToken(token);
     } catch {
       this.onError(new Error('Unable to renew the RTC token.'));
@@ -122,19 +126,29 @@ export class RtcSession {
 
   private get localTracks(): ILocalTrack[] {
     const tracks: ILocalTrack[] = [];
-    if (this.media.microphone) tracks.push(this.media.microphone);
-    if (this.media.camera) tracks.push(this.media.camera);
+    if (this.media?.microphone) tracks.push(this.media.microphone);
+    if (this.media?.camera) tracks.push(this.media.camera);
     return tracks;
   }
 
   async join(): Promise<void> {
-    this.registerListeners();
-    await this.client.join(this.appId, this.roomId, this.token, this.uid);
-    this.joined = true;
-    if (this.localTracks.length > 0) {
+    try {
+      this.registerListeners();
+      await this.client.join(this.appId, this.roomId, this.token, this.userAccount);
+      this.joined = true;
+      this.media = await this.createMedia();
+
+      if (this.localTracks.length === 0) {
+        throw new Error('No camera or microphone is available.');
+      }
+
+      this.onLocalMedia(this.media);
       await this.client.publish(this.localTracks);
+      this.emitRemoteUsers();
+    } catch (error) {
+      await this.cleanup();
+      throw error;
     }
-    this.emitRemoteUsers();
   }
 
   cleanup(): Promise<void> {
@@ -155,6 +169,7 @@ export class RtcSession {
         track.stop();
         track.close();
       }
+      this.media = null;
 
       if (this.joined) {
         try {

@@ -6,6 +6,7 @@ import type {
   IAgoraRTCRemoteUser,
 } from 'agora-rtc-sdk-ng';
 import type { LocalMedia } from '@/lib/media-devices';
+import { getDisplayNameFromRtcUserAccount } from '@/lib/rtc-identity';
 import { Button } from '@/components/ui/button';
 import { CallControls } from '@/components/call-controls';
 import { ConnectionStatus } from '@/components/connection-status';
@@ -13,6 +14,7 @@ import { InviteButton } from '@/components/invite-button';
 import { VideoTile } from '@/components/video-tile';
 
 type CallViewProps = {
+  localDisplayName: string;
   media: LocalMedia;
   remoteUsers: IAgoraRTCRemoteUser[];
   connectionState: ConnectionState;
@@ -31,6 +33,7 @@ type CallViewProps = {
 };
 
 export function CallView({
+  localDisplayName,
   media,
   remoteUsers,
   connectionState,
@@ -48,6 +51,9 @@ export function CallView({
   onLeave,
 }: CallViewProps) {
   const remoteUser = remoteUsers[0] ?? null;
+  const remoteDisplayName = remoteUser
+    ? getDisplayNameFromRtcUserAccount(remoteUser.uid) ?? `Participant ${remoteUser.uid}`
+    : 'Guest';
 
   return (
     <main className="flex h-dvh min-h-screen flex-col overflow-hidden bg-background text-foreground">
@@ -77,9 +83,9 @@ export function CallView({
 
       <div className="flex min-h-0 flex-1 flex-col p-3 md:p-5">
         <div className="grid min-h-0 flex-1 gap-3 md:grid-cols-2 md:gap-4">
-          <VideoTile label="You" localTrack={media.camera} videoEnabled={cameraEnabled} waitingMessage="Your camera is off" />
+          <VideoTile label={`You · ${localDisplayName}`} localTrack={media.camera} videoEnabled={cameraEnabled} waitingMessage="Your camera is off" />
           <VideoTile
-            label={remoteUser ? `Participant ${remoteUser.uid}` : 'Guest'}
+            label={remoteDisplayName}
             remoteUser={remoteUser}
             videoEnabled={Boolean(remoteUser?.videoTrack)}
             waitingMessage="Waiting for another participant"

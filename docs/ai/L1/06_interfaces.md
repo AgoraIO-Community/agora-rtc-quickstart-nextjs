@@ -4,10 +4,11 @@
 
 ## Browser Or User-Facing APIs
 
-`POST /api/token` accepts `{ roomId: string, uid?: number }`. Success returns
-`appId`, `roomId`, `uid`, `token`, and `expiresIn`. Invalid JSON, room ID, or UID
-returns 400. Missing configuration or token failure returns a generic 500. Every
-response uses `Cache-Control: no-store`.
+`POST /api/token` accepts `{ roomId, displayName }` for initial issue or
+`{ roomId, userAccount }` for renewal. Success returns `appId`, `roomId`,
+`userAccount`, `token`, and `expiresIn`. Invalid JSON, room ID, display name, or
+account returns 400. Missing configuration or token failure returns a generic
+500. Every response uses `Cache-Control: no-store`.
 
 ## Events And Media
 

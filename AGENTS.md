@@ -35,16 +35,18 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 - browser token client: `lib/token-client.ts`
 - RTC lifecycle: `lib/rtc-session.ts`
 - device and local-track ownership: `lib/media-devices.ts`
-- room and UID validation: `lib/room-id.ts`
+- room validation: `lib/room-id.ts`
+- display-name and RTC account identity: `lib/rtc-identity.ts`
 - behavior contracts: `tests/`
 
 ## Key Files
 
-- `components/room-experience.tsx` - device initialization and room UI phases
-- `components/pre-join.tsx` - local preview and initial device state
+- `components/room-experience.tsx` - named join, post-join devices, and room UI phases
+- `components/room-experience-loader.tsx` - browser-only RTC SDK boundary
+- `components/join-room.tsx` - display-name and invitation form
 - `components/call-view.tsx` - waiting and peer-present call layout
 - `components/invite-button.tsx` - invitation copy and user feedback
-- `app/api/token/route.ts` - initial token and same-UID renewal
+- `app/api/token/route.ts` - initial named account token and same-account renewal
 - `lib/rtc-session.ts` - join, publish, subscribe, renew, and cleanup
 - `scripts/doctor.mjs` - local runtime and environment checks
 - `ARCHITECTURE.md` - canonical runtime and ownership model
@@ -61,15 +63,16 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 ## RTC Invariants
 
 1. Keep `NEXT_AGORA_APP_CERTIFICATE` server-side only. Never return, log, screenshot, or bundle it.
-2. Generate RTC-only tokens with `RtcTokenBuilder.buildTokenWithUid` and `RtcRole.PUBLISHER`.
+2. Generate RTC-only tokens with `RtcTokenBuilder.buildTokenWithUserAccount` and `RtcRole.PUBLISHER`.
 3. Pass relative `3600` seconds for token and privilege expiration. Do not pass an epoch timestamp.
-4. Use the same `roomId` and numeric `uid` for token generation, `client.join`, and renewal.
+4. Use the same `roomId` and string `userAccount` for token generation, `client.join`, and renewal.
 5. Register client event handlers before `client.join`.
 6. Handle `user-published` independently for audio and video, subscribing before playback.
 7. Keep exactly one RTC client per mounted room session and make cleanup idempotent.
 8. Unpublish tracks, then call `stop()` and `close()` on each local track, then leave the channel.
 9. A missing camera or microphone must not block the other available media type.
 10. Do not add RTM, chat, AI agents, recording, screen sharing, authentication, or persistence without an explicit scope decision.
+11. Do not request camera or microphone access before the user selects **Join Call**.
 
 ## UI Contract
 
@@ -85,7 +88,7 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 
 Mock `agora-rtc-sdk-ng` at the owned module/client boundary. Tests must cover:
 
-- correct room and UID on join;
+- correct room and user account on join;
 - local track publication;
 - independent audio and video subscription;
 - token renewal before expiry;
@@ -119,7 +122,7 @@ Docker commands and environment ownership are documented in README.
 - Lint, typecheck, unit tests, and build may use obviously synthetic credentials.
 - Docker build, startup, and HTTP smoke may use synthetic credentials and prove packaging only.
 - A browser join requires real credentials, network access, and device permission.
-- Complete RTC success requires two independent clients with different UIDs in the same room and observed audio and video receipt in both directions.
+- Complete RTC success requires two independent clients with different user accounts in the same room and observed audio and video receipt in both directions.
 - Never print, commit, screenshot, or bake a real App Certificate into an image.
 
 ## Done Criteria

@@ -1,5 +1,11 @@
 import { buildRtcToken, TOKEN_EXPIRATION_SECONDS } from '@/lib/token';
-import { createRtcUid, isValidRoomId, isValidRtcUid } from '@/lib/room-id';
+import { isValidRoomId } from '@/lib/room-id';
+import {
+  createRtcUserAccount,
+  isValidDisplayName,
+  isValidRtcUserAccount,
+  normalizeDisplayName,
+} from '@/lib/rtc-identity';
 
 export const runtime = 'nodejs';
 
@@ -19,28 +25,30 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: 'Agora credentials are not configured.' }, 500);
   }
 
-  let payload: { roomId?: unknown; uid?: unknown };
+  let payload: { roomId?: unknown; displayName?: unknown; userAccount?: unknown };
   try {
-    payload = (await request.json()) as { roomId?: unknown; uid?: unknown };
+    payload = (await request.json()) as typeof payload;
   } catch {
     return json({ error: 'Request body must be valid JSON.' }, 400);
   }
 
-  if (
-    !isValidRoomId(payload.roomId) ||
-    (payload.uid !== undefined && !isValidRtcUid(payload.uid))
-  ) {
-    return json({ error: 'Invalid room ID or UID.' }, 400);
+  const initialRequest = payload.userAccount === undefined && isValidDisplayName(payload.displayName);
+  const renewalRequest = payload.displayName === undefined && isValidRtcUserAccount(payload.userAccount);
+
+  if (!isValidRoomId(payload.roomId) || (!initialRequest && !renewalRequest)) {
+    return json({ error: 'Invalid room ID or participant identity.' }, 400);
   }
 
-  const uid = payload.uid ?? createRtcUid();
+  const userAccount = renewalRequest
+    ? (payload.userAccount as string)
+    : createRtcUserAccount(normalizeDisplayName(payload.displayName as string));
 
   try {
     const token = buildRtcToken({
       appId,
       appCertificate,
       roomId: payload.roomId,
-      uid,
+      userAccount,
     });
 
     if (!token) {
@@ -50,7 +58,7 @@ export async function POST(request: Request): Promise<Response> {
     return json({
       appId,
       roomId: payload.roomId,
-      uid,
+      userAccount,
       token,
       expiresIn: TOKEN_EXPIRATION_SECONDS,
     });

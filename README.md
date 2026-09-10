@@ -1,7 +1,7 @@
 # Agora RTC Next.js Quickstart
 
 A one-to-one audio and video calling starter built with Next.js and the Agora
-RTC Web SDK. Create a room, check your devices, join from one client, then open
+RTC Web SDK. Create a room, enter your name, join from one client, then open
 the same room URL from another independent client for complete RTC media.
 
 ![Agora RTC Next.js quickstart home](./.github/assets/rtc-nextjs-home.png)
@@ -46,8 +46,8 @@ npm run dev
 Open the exact **Local** URL printed by the development server. The default is
 [http://localhost:3000](http://localhost:3000), but Next.js may select another
 available port when 3000 is already in use. Select **Create Room**, copy the
-invite link, confirm the automatically selected devices, and select **Join
-Call**. Manual device selection is available from **Select devices**.
+invite link, enter the name other participants should see, and select **Join
+Call**. Camera and microphone access begins only after that action.
 
 ## Working From A Clone
 
@@ -76,15 +76,16 @@ variables. Docker receives both values only when the container starts.
 
 ### Single-client success
 
-On the pre-join screen, copy the invite link, choose the initial microphone and
-camera state, and select **Join Call**. The browser and Agora SDK use the system
-devices by default; open **Select devices** only when a manual choice is needed.
+On the room screen, copy the invite link, enter your display name, and select
+**Join Call**. The browser and Agora SDK request the system devices only after
+the join command; open **Select devices** during the call when a manual choice
+is needed.
 A successful single-client run:
 
 - issues an RTC token;
-- joins the generated room with a numeric UID;
+- joins the generated room with a unique RTC user account containing the display name;
 - publishes every available local media track;
-- keeps local preview and controls active; and
+- shows the entered name with the local controls; and
 - shows **Waiting for another participant**.
 
 Single-client join is supported, but it does not prove remote media.
@@ -92,20 +93,20 @@ Single-client join is supported, but it does not prove remote media.
 ### Complete one-to-one experience
 
 Open the exact same room URL in a second tab, window, browser profile, or device.
-Complete pre-join and join independently in each client. Complete RTC success
-requires two different UIDs and actual remote audio and video receipt in both
-directions.
+Enter a different display name and join independently in each client. Complete
+RTC success requires two unique user accounts and actual remote audio and video
+receipt in both directions.
 
 When testing twice on one computer:
 
 - wear headphones or mute one microphone to avoid feedback;
-- turn one camera off if the device cannot serve two browser contexts; and
+- allow both tabs to access the camera and microphone when prompted; and
 - confirm both clients use the same `/room/<room-id>` URL.
 
 ## What You Get
 
 - Next.js App Router UI matching the Agora agent starter visual shell
-- pre-join preview with automatic devices and optional manual selection
+- named room entry without pre-join device capture
 - visible invite actions before join and while waiting for a participant
 - microphone and camera controls during the call
 - direct `agora-rtc-sdk-ng` join, publish, subscribe, renewal, and cleanup
@@ -117,12 +118,13 @@ When testing twice on one computer:
 
 ## How It Works
 
-The home page creates a UUID room URL. The room initializes available local
-media from system defaults, exposes the room URL for invitation, and does not
-join until the user acts. `POST /api/token` validates the room, creates or reuses
-a numeric UID, and returns a non-cacheable RTC token.
-The browser registers events, joins, publishes local tracks, and subscribes to
-remote audio and video independently. Token renewal reuses the same room and UID.
+The home page creates a UUID room URL. The room exposes the invitation URL and a
+display-name field without accessing local devices. `POST /api/token` validates
+the room and participant identity, creates or reuses a unique ASCII RTC user
+account, and returns a non-cacheable RTC token.
+The browser registers events, joins, creates and publishes local tracks, and
+subscribes to remote audio and video independently. Token renewal reuses the
+same room and user account.
 Leaving releases listeners, tracks, devices, and the RTC client.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the canonical topology and lifecycle.
@@ -172,12 +174,14 @@ Docker, and production boundaries.
 
 - `app/api/token/route.ts` - RTC token issue and renewal route
 - `app/room/[roomId]/page.tsx` - validated room entry
-- `components/room-experience.tsx` - pre-join and call state machine
-- `components/pre-join.tsx` - local device setup
+- `components/room-experience.tsx` - named join and call state machine
+- `components/room-experience-loader.tsx` - browser-only RTC SDK boundary
+- `components/join-room.tsx` - display-name and invitation form
 - `components/invite-button.tsx` - shared invitation copy and feedback
 - `components/call-view.tsx` - one-to-one call layout
 - `lib/rtc-session.ts` - Agora client lifecycle
 - `lib/media-devices.ts` - partial media and device handling
+- `lib/rtc-identity.ts` - display-name validation and RTC account encoding
 - `tests/` - token, RTC, device, and UI contracts
 - `docs/ai/` - progressive coding-agent context
 - `AGENTS.md` - coding-agent loading and implementation constraints
@@ -186,11 +190,11 @@ Docker, and production boundaries.
 
 - **Credentials are not configured:** confirm both `.env.local` values are non-empty, then restart Next.js.
 - **pnpm is missing or has the wrong version:** use `npm install --package-lock=false`, then run scripts with `npm run <script>`.
-- **Camera or microphone permission was denied:** allow the site in browser permissions and retry device setup.
+- **Camera or microphone permission was denied:** allow the site in browser permissions and select **Join Call** again.
 - **Only one media type works:** audio-only or video-only join is supported when one device is unavailable.
 - **No remote video:** confirm both clients use the same room URL and the remote camera is enabled.
 - **No remote audio:** confirm the remote microphone is enabled and browser playback is not muted.
-- **Two local tabs cannot use the camera:** turn off one camera or use another browser or device.
+- **A second tab cannot use a device:** allow both tabs in browser permissions, or choose another available camera or microphone.
 - **Container starts but RTC fails:** verify both runtime credentials are present and valid; HTTP startup alone is not RTC evidence.
 
 ## Deployment
@@ -226,7 +230,7 @@ prove packaging only; they do not prove RTC token validity or media.
 ## Security
 
 The App Certificate remains server-side and token responses are non-cacheable.
-The token route validates room IDs and UIDs but has no application login, room
+The token route validates room IDs, display names, and RTC user accounts but has no application login, room
 authorization, server-controlled identity, or rate limiting.
 
 Use a dedicated demo project. Do not attach production credentials to untrusted

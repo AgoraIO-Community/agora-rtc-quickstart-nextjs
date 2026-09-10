@@ -3,7 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import type { IAgoraRTCRemoteUser } from 'agora-rtc-sdk-ng';
 import type { LocalMedia } from '@/lib/media-devices';
 import { RoomHome } from '@/components/room-home';
-import { PreJoin } from '@/components/pre-join';
+import { JoinRoom } from '@/components/join-room';
 import { CallView } from '@/components/call-view';
 
 const push = vi.fn();
@@ -49,48 +49,30 @@ describe('starter UI', () => {
     expect(screen.getByText(/powered by/i)).toBeInTheDocument();
   });
 
-  it('keeps media local until the explicit Join Call command', () => {
+  it('requires a participant name before joining', () => {
     const onJoin = vi.fn();
     render(
-      <PreJoin
-        media={emptyMedia}
-        microphones={[]}
-        cameras={[]}
-        microphoneId=""
-        cameraId=""
-        microphoneEnabled={false}
-        cameraEnabled={false}
+      <JoinRoom
+        displayName=""
         joining={false}
         error={null}
-        onMicrophoneChange={vi.fn()}
-        onCameraChange={vi.fn()}
-        onMicrophoneToggle={vi.fn()}
-        onCameraToggle={vi.fn()}
+        onDisplayNameChange={vi.fn()}
         onJoin={onJoin}
       />,
     );
 
-    expect(screen.getByText(/stays local until you join/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/your name/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /join call/i })).toBeDisabled();
     expect(onJoin).not.toHaveBeenCalled();
   });
 
-  it('keeps invite copy visible before joining', async () => {
+  it('keeps invite copy visible on the named join form', async () => {
     render(
-      <PreJoin
-        media={emptyMedia}
-        microphones={[]}
-        cameras={[]}
-        microphoneId=""
-        cameraId=""
-        microphoneEnabled={false}
-        cameraEnabled={false}
+      <JoinRoom
+        displayName="Alice"
         joining={false}
         error={null}
-        onMicrophoneChange={vi.fn()}
-        onCameraChange={vi.fn()}
-        onMicrophoneToggle={vi.fn()}
-        onCameraToggle={vi.fn()}
+        onDisplayNameChange={vi.fn()}
         onJoin={vi.fn()}
       />,
     );
@@ -101,38 +83,10 @@ describe('starter UI', () => {
     expect(screen.getByRole('button', { name: /invite link copied/i })).toBeInTheDocument();
   });
 
-  it('uses automatic devices until manual selection is requested', () => {
-    render(
-      <PreJoin
-        media={emptyMedia}
-        microphones={[{ deviceId: 'mic-1', label: 'Studio microphone' } as MediaDeviceInfo]}
-        cameras={[{ deviceId: 'cam-1', label: 'Desk camera' } as MediaDeviceInfo]}
-        microphoneId="mic-1"
-        cameraId="cam-1"
-        microphoneEnabled={false}
-        cameraEnabled={false}
-        joining={false}
-        error={null}
-        onMicrophoneChange={vi.fn()}
-        onCameraChange={vi.fn()}
-        onMicrophoneToggle={vi.fn()}
-        onCameraToggle={vi.fn()}
-        onJoin={vi.fn()}
-      />,
-    );
-
-    expect(screen.queryByLabelText('Microphone')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Camera')).not.toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: /select devices/i }));
-
-    expect(screen.getByLabelText('Microphone')).toBeInTheDocument();
-    expect(screen.getByLabelText('Camera')).toBeInTheDocument();
-  });
-
   it('treats single-client waiting as a connected call state', () => {
     render(
       <CallView
+        localDisplayName="Alice"
         media={emptyMedia}
         remoteUsers={[]}
         connectionState="CONNECTED"
@@ -173,8 +127,9 @@ describe('starter UI', () => {
   it('shows the complete two-participant state when a peer joins', () => {
     render(
       <CallView
+        localDisplayName="Alice"
         media={emptyMedia}
-        remoteUsers={[{ uid: 77 } as IAgoraRTCRemoteUser]}
+        remoteUsers={[{ uid: 'rtc1.Qm9i.0123456789abcdef' } as IAgoraRTCRemoteUser]}
         connectionState="CONNECTED"
         error={null}
         microphones={[]}
@@ -192,6 +147,7 @@ describe('starter UI', () => {
     );
 
     expect(screen.getByText('2 participants')).toBeInTheDocument();
-    expect(screen.getByText('Participant 77')).toBeInTheDocument();
+    expect(screen.getByText('Bob')).toBeInTheDocument();
+    expect(screen.getByText('You · Alice')).toBeInTheDocument();
   });
 });

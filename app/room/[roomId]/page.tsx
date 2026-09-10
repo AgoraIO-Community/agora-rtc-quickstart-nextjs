@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { RoomExperience } from '@/components/room-experience';
+import { RoomExperienceLoader } from '@/components/room-experience-loader';
 import { isValidRoomId } from '@/lib/room-id';
 
 export default async function RoomPage({
@@ -10,5 +10,5 @@ export default async function RoomPage({
   const { roomId } = await params;
   if (!isValidRoomId(roomId)) notFound();
 
-  return <RoomExperience roomId={roomId} />;
+  return <RoomExperienceLoader roomId={roomId} />;
 }

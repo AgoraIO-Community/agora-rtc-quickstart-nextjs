@@ -5,7 +5,7 @@
 This quickstart is a one-to-one browser calling application. Next.js serves the
 UI and a request-scoped token route. Each browser owns its local media and one
 Agora RTC Web SDK client. Agora carries audio and video between clients that
-join the same room with different numeric UIDs.
+join the same room with different string user accounts.
 
 ## Component Topology
 
@@ -19,36 +19,39 @@ Next.js application and token route (Node.js process)
   v
 Agora RTC channel: UUID room ID
   ^                                     ^
-  | UID A: publish + subscribe           | UID B: publish + subscribe
+  | account A: publish + subscribe       | account B: publish + subscribe
   +-------------------------------------+
 ```
 
 `app/page.tsx` renders room creation. `app/room/[roomId]/page.tsx` accepts only a
 canonical lowercase UUID and mounts `components/room-experience.tsx`.
+`components/room-experience-loader.tsx` keeps the Agora SDK outside server-side
+rendering while allowing each browser tab to load the client before Join Call.
 
 ## Request And Media Flow
 
 1. The home page creates a UUID room URL.
-2. The room experience imports `agora-rtc-sdk-ng` in the browser and requests
-   camera and microphone access using the system-selected devices by default.
-3. Pre-join exposes the room URL for invitation. Manual device selection remains
-   available behind settings, and the user explicitly selects **Join Call**.
-4. The browser calls `POST /api/token` with the room ID. The server validates the
-   UUID, creates a positive numeric UID, and returns App ID, room ID, UID, token,
-   and relative expiration under `Cache-Control: no-store`.
-5. `RtcSession` registers Agora event handlers before joining, joins with the
-   returned room ID and UID, and publishes every available local track.
+2. The room experience exposes the invitation URL and display-name form without
+   requesting camera and microphone access.
+3. The user enters a name and explicitly selects **Join Call**.
+4. The browser calls `POST /api/token` with the room ID and display name. The
+   server validates both, creates a unique ASCII RTC user account containing the
+   encoded name, and returns App ID, room ID, account, token, and relative
+   expiration under `Cache-Control: no-store`.
+5. `RtcSession` registers Agora event handlers, joins with the returned room ID
+   and account, then creates and publishes every available local track.
 6. `user-published` is handled independently for audio and video. The client
    subscribes before playing audio or rendering video.
 7. Before token expiry, the client requests a new token with the same room ID
-   and numeric UID and calls `renewToken`.
+   and user account and calls `renewToken`.
 8. Cleanup unregisters listeners, unpublishes local tracks, stops and closes
    every owned track, and leaves the channel. Cleanup is idempotent.
 
 ## Ownership Boundaries
 
-- `components/room-experience.tsx` owns device initialization and the `loading`,
-  `prejoin`, `joining`, `connected`, `error`, and `left` UI phases.
+- `components/room-experience.tsx` owns named join, device initialization after
+  join, and the `setup`, `joining`, and `connected` UI phases.
+- `components/join-room.tsx` owns the display-name and invitation form.
 - `lib/media-devices.ts` owns local track creation, switching, enablement,
   device-change listeners, and track release.
 - `app/api/token/route.ts` owns the HTTP request and response contract.
@@ -64,17 +67,18 @@ canonical lowercase UUID and mounts `components/room-experience.tsx`.
 `NEXT_AGORA_APP_CERTIFICATE` is server-only and is read only by the token route.
 It must not be returned, logged, bundled, copied into an image, or committed.
 
-Tokens use `RtcTokenBuilder.buildTokenWithUid`, `RtcRole.PUBLISHER`, and a
+Tokens use `RtcTokenBuilder.buildTokenWithUserAccount`, `RtcRole.PUBLISHER`, and a
 3600-second relative token and privilege expiration. Token, join, and renewal
-must use the same room ID and numeric UID.
+must use the same room ID and string user account.
 
 ## RTC Lifecycle
 
 There is exactly one `RtcSession` per mounted room session. Event handlers are
-registered before join so existing publications are not missed. Audio and video
-publication events remain separate. A missing camera or microphone does not
-block the other available media type. Device changes refresh the available list;
-manual selection is optional and does not block the default join path.
+registered before join so existing publications are not missed. Local tracks are
+created only after join, so opening an invitation does not contend for devices.
+Audio and video publication events remain separate. A missing camera or
+microphone does not block the other available media type. Device changes refresh
+the available list; manual selection is available during the call.
 
 ## Runtime Modes
 
@@ -102,8 +106,9 @@ The container is stateless. It does not store rooms, users, media, or tokens.
 
 ## API And External Contracts
 
-`POST /api/token` accepts JSON `{ "roomId": string, "uid"?: number }`.
-Successful responses contain `appId`, `roomId`, `uid`, `token`, and `expiresIn`.
+`POST /api/token` accepts an initial `{ "roomId": string, "displayName": string }`
+or renewal `{ "roomId": string, "userAccount": string }` request. Successful
+responses contain `appId`, `roomId`, `userAccount`, `token`, and `expiresIn`.
 Malformed JSON or invalid identifiers return 400. Missing credentials or token
 construction failures return a generic 500 response. All responses are
 non-cacheable.

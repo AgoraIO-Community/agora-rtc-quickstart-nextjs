@@ -63,8 +63,8 @@ Single-client join is separate from two-client bidirectional media success.
 
 Static and Docker checks may use synthetic credentials and do not prove RTC.
 Live checks require real credentials, network, browser, and device access.
-Complete success requires different UIDs in one room and observed audio and video
-receipt in both directions.
+Complete success requires different user accounts in one room and observed audio
+and video receipt in both directions.
 
 ## Related Deep Dives
 
