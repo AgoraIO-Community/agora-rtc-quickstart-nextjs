@@ -45,7 +45,6 @@ function setup() {
   const media = {
     microphone: microphone as unknown as IMicrophoneAudioTrack,
     camera: camera as unknown as ICameraVideoTrack,
-    errors: {},
   };
   const createMedia = vi.fn<() => Promise<LocalMedia>>(async () => {
     order.push('create-media');
@@ -159,10 +158,6 @@ describe('RtcSession', () => {
     createMedia.mockResolvedValueOnce({
       microphone: null,
       camera: null,
-      errors: {
-        microphone: 'Microphone is unavailable.',
-        camera: 'Camera is unavailable.',
-      },
     });
 
     await expect(session.join()).rejects.toThrow('No camera or microphone is available.');

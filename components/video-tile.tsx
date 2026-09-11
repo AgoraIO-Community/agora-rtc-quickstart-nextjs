@@ -11,7 +11,6 @@ type VideoTileProps = {
   remoteUser?: IAgoraRTCRemoteUser | null;
   videoEnabled?: boolean;
   waitingMessage?: string;
-  compact?: boolean;
   waitingAction?: ReactNode;
 };
 
@@ -21,7 +20,6 @@ export function VideoTile({
   remoteUser,
   videoEnabled = true,
   waitingMessage,
-  compact = false,
   waitingAction,
 }: VideoTileProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,9 +39,7 @@ export function VideoTile({
 
   return (
     <section
-      className={`video-surface relative isolate overflow-hidden rounded-2xl border border-[#303030] bg-[#0d0d0d] text-white ${
-        compact ? 'aspect-video w-full' : 'min-h-[17rem] md:min-h-0'
-      }`}
+      className="video-surface relative isolate min-h-[17rem] overflow-hidden rounded-2xl border border-[#303030] bg-[#0d0d0d] text-white md:min-h-0"
       aria-label={`${label} video`}
     >
       <div ref={containerRef} className="absolute inset-0" />

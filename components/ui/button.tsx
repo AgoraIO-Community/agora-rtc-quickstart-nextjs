@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from 'react';
 import { clsx } from 'clsx';
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive';
+  variant?: 'primary' | 'secondary' | 'destructive';
   size?: 'default' | 'icon';
 };
 
@@ -21,8 +21,6 @@ export function Button({
           'border-primary bg-primary text-black hover:border-white hover:bg-white',
         variant === 'secondary' &&
           'border-border bg-secondary text-secondary-foreground hover:bg-muted',
-        variant === 'ghost' &&
-          'border-transparent bg-transparent text-foreground hover:bg-secondary',
         variant === 'destructive' &&
           'border-destructive bg-transparent text-destructive hover:bg-destructive/10',
         className,

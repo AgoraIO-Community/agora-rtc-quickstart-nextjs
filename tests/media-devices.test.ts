@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
-  closeLocalMedia,
   createLocalMedia,
   setMediaEnabled,
   subscribeToDeviceChanges,
@@ -8,7 +7,6 @@ import {
 } from '@/lib/media-devices';
 import type {
   DeviceChangeSdk,
-  LocalMedia,
   MediaSdk,
 } from '@/lib/media-devices';
 
@@ -36,7 +34,6 @@ describe('local media devices', () => {
 
     expect(media.microphone).toBe(microphone);
     expect(media.camera).toBeNull();
-    expect(media.errors.camera).toBe('Camera is unavailable.');
   });
 
   it('switches and enables existing tracks', async () => {
@@ -47,20 +44,6 @@ describe('local media devices', () => {
 
     expect(track.setDevice).toHaveBeenCalledWith('device-2');
     expect(track.setEnabled).toHaveBeenCalledWith(false);
-  });
-
-  it('stops then closes every owned track', () => {
-    const order: string[] = [];
-    const microphone = createTrack('microphone');
-    const camera = createTrack('camera');
-    microphone.stop.mockImplementation(() => order.push('mic-stop'));
-    microphone.close.mockImplementation(() => order.push('mic-close'));
-    camera.stop.mockImplementation(() => order.push('camera-stop'));
-    camera.close.mockImplementation(() => order.push('camera-close'));
-
-    closeLocalMedia({ microphone, camera, errors: {} } as unknown as LocalMedia);
-
-    expect(order).toEqual(['mic-stop', 'mic-close', 'camera-stop', 'camera-close']);
   });
 
   it('installs and removes Agora device listeners', () => {

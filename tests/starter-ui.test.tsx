@@ -36,7 +36,6 @@ Object.defineProperty(navigator, 'clipboard', {
 const emptyMedia = {
   microphone: null,
   camera: null,
-  errors: {},
 } as LocalMedia;
 
 describe('starter UI', () => {

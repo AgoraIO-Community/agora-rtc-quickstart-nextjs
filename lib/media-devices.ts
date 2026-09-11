@@ -7,7 +7,6 @@ import type {
 export type LocalMedia = {
   microphone: IMicrophoneAudioTrack | null;
   camera: ICameraVideoTrack | null;
-  errors: Partial<Record<'microphone' | 'camera', string>>;
 };
 
 export type MediaSdk = Pick<
@@ -32,14 +31,6 @@ export async function createLocalMedia(
     microphone:
       microphoneResult.status === 'fulfilled' ? microphoneResult.value : null,
     camera: cameraResult.status === 'fulfilled' ? cameraResult.value : null,
-    errors: {
-      ...(microphoneResult.status === 'rejected'
-        ? { microphone: 'Microphone is unavailable.' }
-        : {}),
-      ...(cameraResult.status === 'rejected'
-        ? { camera: 'Camera is unavailable.' }
-        : {}),
-    },
   };
 }
 
@@ -60,13 +51,6 @@ export async function setMediaEnabled(
   enabled: boolean,
 ): Promise<void> {
   await track?.setEnabled(enabled);
-}
-
-export function closeLocalMedia(media: LocalMedia): void {
-  for (const track of [media.microphone, media.camera]) {
-    track?.stop();
-    track?.close();
-  }
 }
 
 export type DeviceChangeSdk = Pick<

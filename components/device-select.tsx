@@ -10,7 +10,6 @@ type DeviceSelectProps = {
   label: string;
   devices: MediaDevice[];
   value: string;
-  disabled?: boolean;
   onChange: (deviceId: string) => void;
 };
 
@@ -19,7 +18,6 @@ export function DeviceSelect({
   label,
   devices,
   value,
-  disabled,
   onChange,
 }: DeviceSelectProps) {
   return (
@@ -28,7 +26,7 @@ export function DeviceSelect({
       <select
         id={id}
         value={value}
-        disabled={disabled || devices.length === 0}
+        disabled={devices.length === 0}
         onChange={(event) => onChange(event.target.value)}
         className="h-10 w-full min-w-0 rounded-lg border border-[#343434] bg-[#1c1c1c] px-3 text-sm text-white outline-none disabled:cursor-not-allowed disabled:opacity-50"
       >
