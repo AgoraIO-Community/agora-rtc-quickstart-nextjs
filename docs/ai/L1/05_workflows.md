@@ -17,19 +17,19 @@ client and clear an active in-memory RTC session.
 
 ## Modify The RTC Core Flow
 
-Inspect `lib/rtc-session.ts`, `lib/token.ts`, the token route, and their tests.
-Preserve the RTC invariants, add focused tests, run `pnpm run verify`, and update
+Inspect `lib/rtc-session.ts`, `lib/token.ts`, and the token route. Preserve the
+RTC invariants, run focused runtime checks and `pnpm run verify`, and update
 ARCHITECTURE, RECIPE, interfaces, gotchas, and security as affected.
 
 ## Modify The Client Or UI
 
 Edit `components/` and `app/`, preserve explicit join and device cleanup, update
-component tests and screenshots when stale, then run the canonical verification.
+screenshots when stale, then run the canonical verification and relevant browser checks.
 
 ## Change An Interface
 
-Update the owner, browser client, contract tests, README, ARCHITECTURE, RECIPE,
-and `06_interfaces.md` in one local change.
+Update the owner, browser client, focused runtime verification, README,
+ARCHITECTURE, RECIPE, and `06_interfaces.md` in one local change.
 
 ## Deploy
 

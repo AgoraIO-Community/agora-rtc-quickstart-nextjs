@@ -1,6 +1,6 @@
 # 04 Conventions
 
-> Coding, testing, logging, and implementation conventions.
+> Coding, verification, logging, and implementation conventions.
 
 ## Code Style
 
@@ -15,12 +15,11 @@ and renewal. Join before creating local tracks, keep cleanup idempotent, and
 preserve partial media when one device fails. Surface generic user errors
 without credential data.
 
-## Testing Patterns
+## Verification Patterns
 
-Mock `agora-rtc-sdk-ng` at the owned SDK/client boundary. Test event ordering,
-publish and subscribe behavior, renewal identity, cleanup ordering, device
-fallback, API validation, and waiting/peer-present UI states. Run focused Vitest
-files during changes and `pnpm run verify` before shipping.
+Run doctor, lint, typecheck, and production build before shipping. Validate
+changed runtime behavior at its owning boundary, and use two independent clients
+for complete bidirectional RTC media evidence.
 
 ## Documentation Changes
 

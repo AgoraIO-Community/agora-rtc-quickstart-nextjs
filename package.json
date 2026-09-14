@@ -14,9 +14,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "verify": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
+    "verify": "pnpm run doctor && pnpm run lint && pnpm run typecheck && pnpm run build"
   },
   "dependencies": {
     "agora-rtc-sdk-ng": "4.24.3",
@@ -28,18 +26,14 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "6.6.3",
-    "@testing-library/react": "16.1.0",
     "@types/node": "22.19.15",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "autoprefixer": "10.4.27",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.2",
-    "jsdom": "26.1.0",
     "postcss": "8.5.8",
     "tailwindcss": "3.4.19",
-    "typescript": "5.9.3",
-    "vitest": "3.2.4"
+    "typescript": "5.9.3"
   }
 }

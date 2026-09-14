@@ -43,7 +43,6 @@ npm run doctor
 ```bash
 pnpm dev
 pnpm run start
-pnpm run test:watch
 ```
 
 ## Verification
@@ -51,7 +50,6 @@ pnpm run test:watch
 ```bash
 pnpm run lint
 pnpm run typecheck
-pnpm test
 pnpm run build
 pnpm run verify
 ```

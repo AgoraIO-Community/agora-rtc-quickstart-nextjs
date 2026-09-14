@@ -147,7 +147,6 @@ pnpm run doctor        # check Node, pnpm, required files, and local env values
 ```bash
 pnpm dev               # Next.js development server
 pnpm run start         # start an existing production build
-pnpm run test:watch    # Vitest watch mode
 ```
 
 ### Quality
@@ -155,14 +154,13 @@ pnpm run test:watch    # Vitest watch mode
 ```bash
 pnpm run lint          # ESLint
 pnpm run typecheck     # TypeScript without emit
-pnpm test              # unit and component tests
 pnpm run build         # production build
 ```
 
 ### CI / Pre-ship
 
 ```bash
-pnpm run verify        # lint + typecheck + test + build
+pnpm run verify        # doctor + lint + typecheck + build
 ```
 
 ## Architecture
@@ -186,7 +184,6 @@ Docker, and production boundaries.
 - `lib/rtc-session.ts` - Agora client lifecycle
 - `lib/media-devices.ts` - partial media and device handling
 - `lib/rtc-identity.ts` - display-name validation and RTC account encoding
-- `tests/` - token, RTC, device, and UI contracts
 - `docs/ai/` - progressive coding-agent context
 - `AGENTS.md` - coding-agent loading and implementation constraints
 

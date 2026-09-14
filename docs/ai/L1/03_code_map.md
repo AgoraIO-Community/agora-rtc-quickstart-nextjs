@@ -9,7 +9,6 @@ app/          Next.js pages and token API
 components/   named join, in-call, controls, devices, and visual shell
 lib/          room identity, tokens, devices, and RTC lifecycle
 scripts/      local environment doctor
-tests/        token, RTC, device, room, and UI contracts
 public/       Agora marks and favicon
 .github/      CI, Docker CI, and README assets
 docs/ai/      progressive coding-agent context

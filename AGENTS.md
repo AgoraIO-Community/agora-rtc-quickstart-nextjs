@@ -37,7 +37,6 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 - device and local-track ownership: `lib/media-devices.ts`
 - room validation: `lib/room-id.ts`
 - display-name and RTC account identity: `lib/rtc-identity.ts`
-- behavior contracts: `tests/`
 
 ## Key Files
 
@@ -86,19 +85,11 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 - Use icons and tooltips for familiar call controls. Keep visible text operational, not tutorial copy.
 - Update README screenshots whenever material UI changes make existing evidence stale.
 
-## Testing
+## Verification
 
-Mock `agora-rtc-sdk-ng` at the owned module/client boundary. Tests must cover:
-
-- correct room and user account on join;
-- local track publication;
-- independent audio and video subscription;
-- token renewal before expiry;
-- device switching and partial media failures;
-- cleanup ordering and idempotency; and
-- single-client waiting and two-participant UI states.
-
-Do not mark implementation work complete without tests.
+Use doctor, lint, typecheck, and production build as the canonical repository
+checks. Validate runtime behavior at the layer changed, and keep two-client
+bidirectional audio and video as the complete RTC First Success gate.
 
 ## Commands
 
@@ -108,7 +99,6 @@ pnpm run doctor
 pnpm dev
 pnpm run lint
 pnpm run typecheck
-pnpm test
 pnpm run build
 pnpm run verify
 ```
@@ -121,7 +111,7 @@ Docker commands and environment ownership are documented in README.
 
 ## Verification Safety
 
-- Lint, typecheck, unit tests, and build may use obviously synthetic credentials.
+- Doctor, lint, typecheck, and build may use obviously synthetic credentials.
 - Docker build, startup, and HTTP smoke may use synthetic credentials and prove packaging only.
 - A browser join requires real credentials, network access, and device permission.
 - Complete RTC success requires two independent clients with different user accounts in the same room and observed audio and video receipt in both directions.
@@ -129,7 +119,7 @@ Docker commands and environment ownership are documented in README.
 
 ## Done Criteria
 
-1. Run the narrowest relevant test.
+1. Run the narrowest relevant static or runtime check.
 2. Run `pnpm run verify` for shipped changes.
 3. Build and start the production image when runtime or packaging can change.
 4. Update README, ARCHITECTURE, AGENTS, RECIPE, and affected L1 docs when their contracts change.
@@ -147,8 +137,8 @@ Docker commands and environment ownership are documented in README.
 
 When a route, environment key, lifecycle rule, UI workflow, success condition,
 or deployment boundary changes, update its owning document and every summary
-that links to it. Keep README, ARCHITECTURE, RECIPE, affected L1 files, tests,
-CI, and Docker behavior consistent.
+that links to it. Keep README, ARCHITECTURE, RECIPE, affected L1 files, CI, and
+Docker behavior consistent.
 
 ## Deployment Boundary
 

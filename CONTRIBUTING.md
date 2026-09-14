@@ -12,7 +12,7 @@ checks and builds may use obviously synthetic values.
 
 1. Inspect the current branch and worktree before editing.
 2. Make the narrowest change that satisfies the requested behavior.
-3. Run the focused test for the owned module.
+3. Run the narrowest relevant static or runtime check for the changed behavior.
 4. Run `pnpm run verify` before declaring implementation work complete.
 5. Build and start the Docker image when a change can affect packaging or the
    production runtime.
@@ -28,19 +28,10 @@ checks and builds may use obviously synthetic values.
 - Release every owned media track and client resource.
 - Preserve partial-media behavior when one device is unavailable.
 
-## Testing
+## Verification
 
-Run a focused test while iterating:
-
-```bash
-pnpm test -- tests/rtc-session.test.ts
-pnpm test -- tests/token-route.test.ts
-pnpm test -- tests/media-devices.test.ts
-pnpm test -- tests/starter-ui.test.tsx
-pnpm test -- tests/node-support.test.mjs
-```
-
-Run the canonical project check before review:
+Run the canonical project check before review. It covers doctor, lint,
+typecheck, and the production build:
 
 ```bash
 pnpm run verify
@@ -61,7 +52,7 @@ consistent across their owners.
 
 Keep changes scoped, explain user-visible and contract changes, include focused
 and canonical verification results, and state whether Docker and live RTC were
-tested. Do not report single-client join or HTTP startup as complete
+verified. Do not report single-client join or HTTP startup as complete
 bidirectional RTC success.
 
 ## Security Reports

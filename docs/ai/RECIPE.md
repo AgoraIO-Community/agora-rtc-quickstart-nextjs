@@ -45,11 +45,11 @@ token behavior from memory.
 ## Extension Points
 
 - `ui-experience`: change `components/` and `app/` presentation while preserving
-  explicit join, stable media tiles, lifecycle ownership, and UI tests. Run the
-  affected component tests and `pnpm run verify`.
+  explicit join, stable media tiles, and lifecycle ownership. Run the relevant
+  browser checks and `pnpm run verify`.
 - `application-access-control`: add login, room authorization, identity, role,
   rate limiting, and abuse controls around `app/api/token/route.ts`. Update token
-  tests, README, ARCHITECTURE, interfaces, security, and deployment docs.
+  route verification, README, ARCHITECTURE, interfaces, security, and deployment docs.
 
 ## Invariants
 
@@ -66,14 +66,14 @@ token behavior from memory.
 
 - `POST /api/token` accepts `{ roomId, displayName }` initially or `{ roomId, userAccount }` for renewal and returns `appId`, `roomId`, `userAccount`, `token`, and `expiresIn` under `Cache-Control: no-store`.
 - `.env.local` uses `NEXT_PUBLIC_AGORA_APP_ID` and server-only `NEXT_AGORA_APP_CERTIFICATE`.
-- `pnpm run verify` is the canonical lint, typecheck, test, and build command.
+- `pnpm run verify` is the canonical doctor, lint, typecheck, and build command.
 - Docker runs standalone Next.js on port 3000 and never bakes the certificate into the image.
 
 ## Internal / Subject To Change
 
 Component composition, CSS, local phase representation, device-list rendering,
-and helper function boundaries may change when their owned contracts and tests
-remain satisfied.
+and helper function boundaries may change when their owned contracts and
+runtime behavior remain satisfied.
 
 ## Consumer Onboarding Recipe
 
