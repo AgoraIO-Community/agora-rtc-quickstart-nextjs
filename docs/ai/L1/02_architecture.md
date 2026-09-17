@@ -19,8 +19,9 @@ devices. After an explicit join action it requests a scoped account token,
 activates React SDK hooks after the initial Strict Mode replay, joins, creates
 and publishes local tracks, and subscribes to audio and video independently.
 Renewal reuses room and user account. Hook cleanup unpublishes, releases tracks,
-and leaves. Development uses the Next.js
-default Turbopack runtime to preserve this client state across cold route compilation.
+and leaves. A shared `TrackBoundary` and stable player configuration prevent
+render-only updates from interrupting active playback. Development uses the
+Next.js default Turbopack runtime to preserve this client state across cold route compilation.
 
 ## Ownership Boundaries
 

@@ -74,6 +74,8 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 11. Do not request camera or microphone access before the user selects **Join Call**.
 12. Keep `pnpm dev` on the Next.js default Turbopack runtime; forcing Webpack can
     reload active room clients during cold cross-browser route compilation.
+13. Keep audio and video players under `TrackBoundary` and pass stable player
+    configuration objects so React re-renders do not interrupt active playback.
 
 ## UI Contract
 

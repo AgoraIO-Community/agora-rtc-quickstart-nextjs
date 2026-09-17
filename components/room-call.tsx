@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AgoraRTC, {
   RemoteAudioTrack,
+  TrackBoundary,
   useConnectionState,
   useJoin,
   useLocalCameraTrack,
@@ -151,7 +152,7 @@ export function RoomCall({
   }
 
   return (
-    <>
+    <TrackBoundary>
       {audioTracks.map((track) => <RemoteAudioTrack key={track.getUserId()} track={track} play />)}
       <CallView
         localDisplayName={displayName}
@@ -171,6 +172,6 @@ export function RoomCall({
         onCameraToggle={() => void toggle('camera')}
         onLeave={() => onLeave()}
       />
-    </>
+    </TrackBoundary>
   );
 }

@@ -13,7 +13,8 @@ Use the React SDK hooks for join, publication, remote subscriptions, and track
 cleanup. Activate after Strict Mode's initial replay. Keep one provider client
 per mounted room and one room/user account across token and renewal. Join before
 creating local tracks and preserve partial media when one device fails. Surface generic user errors
-without credential data.
+without credential data. Keep track players under `TrackBoundary` and pass stable
+video-player configuration objects.
 
 ## Verification Patterns
 

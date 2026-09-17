@@ -61,6 +61,8 @@ token behavior from memory.
 - Local devices are not requested before Join Call; system-selected devices are the default path afterward.
 - Development uses the Next.js default Turbopack runtime so cold cross-browser
   route compilation does not reload an active RTC room.
+- Audio and video players remain under `TrackBoundary` with stable player
+  configuration objects so render-only updates do not restart playback.
 
 ## Stable Contracts
 

@@ -44,6 +44,8 @@ runtime can reload an active room when another browser first compiles `/`.
    Mode effect replay, `useJoin` joins with the returned room ID and account;
    local-track hooks create available tracks and `usePublish` publishes them.
 6. React SDK hooks subscribe to audio and video independently before playback.
+   A shared `TrackBoundary` and stable video-player configuration keep brief
+   React re-renders from stopping and immediately reloading active tracks.
 7. Before token expiry, the client requests a new token with the same room ID
    and user account and calls `renewToken`.
 8. Unmounting the call lets React SDK hooks unpublish, release local tracks, and
@@ -80,6 +82,8 @@ Local tracks are created only after join, so opening an invitation does not
 contend for devices. Audio and video subscriptions remain separate. A missing camera or
 microphone does not block the other available media type. Device changes refresh
 the available list; manual selection is available during the call.
+Track players share a `TrackBoundary`, and video-player configuration objects
+remain referentially stable so render-only updates do not interrupt playback.
 Agora SDK `exception` events report quality degradation and recovery; they are
 not routed to the application's fatal error banner.
 
