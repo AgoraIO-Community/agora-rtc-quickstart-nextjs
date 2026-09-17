@@ -76,6 +76,8 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
     reload active room clients during cold cross-browser route compilation.
 13. Keep audio and video players under `TrackBoundary` and pass stable player
     configuration objects so React re-renders do not interrupt active playback.
+14. Suppress only the browser's exact expected `AbortError` for a `play()` call
+    interrupted by RTC teardown; surface every other unhandled rejection.
 
 ## UI Contract
 

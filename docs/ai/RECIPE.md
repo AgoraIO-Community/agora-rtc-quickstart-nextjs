@@ -63,6 +63,10 @@ token behavior from memory.
   route compilation does not reload an active RTC room.
 - Audio and video players remain under `TrackBoundary` with stable player
   configuration objects so render-only updates do not restart playback.
+- Keep the room-level playback rejection guard mounted across call teardown. It
+  may ignore only the exact browser `AbortError` caused when RTC teardown
+  interrupts `play()` with a new load request, and must preserve every other
+  playback rejection.
 
 ## Stable Contracts
 

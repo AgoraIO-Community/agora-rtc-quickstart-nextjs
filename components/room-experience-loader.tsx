@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useRef, type ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 import { BrandFooter } from '@/components/brand-footer';
+import { MediaPlaybackGuard } from '@/components/media-playback-guard';
 
 const RoomExperience = dynamic(
   async () => {
@@ -34,5 +35,10 @@ const RoomExperience = dynamic(
 );
 
 export function RoomExperienceLoader({ roomId }: { roomId: string }) {
-  return <RoomExperience roomId={roomId} />;
+  return (
+    <>
+      <MediaPlaybackGuard />
+      <RoomExperience roomId={roomId} />
+    </>
+  );
 }

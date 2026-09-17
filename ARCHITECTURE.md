@@ -84,6 +84,10 @@ microphone does not block the other available media type. Device changes refresh
 the available list; manual selection is available during the call.
 Track players share a `TrackBoundary`, and video-player configuration objects
 remain referentially stable so render-only updates do not interrupt playback.
+The room loader keeps a route-scoped rejection guard mounted across call teardown.
+It ignores only the browser's expected `play()`-interrupted-by-new-load
+`AbortError` at the media-play promise boundary; all other playback failures and
+unhandled rejections continue to surface.
 Agora SDK `exception` events report quality degradation and recovery; they are
 not routed to the application's fatal error banner.
 
