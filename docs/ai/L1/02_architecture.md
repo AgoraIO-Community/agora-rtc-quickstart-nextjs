@@ -6,7 +6,7 @@
 
 - Next.js App Router pages and API route
 - React client components for named join and call state
-- Agora RTC Web SDK browser client
+- Agora RTC React SDK browser client
 - server-side `agora-token` builder
 - Agora RTC channel transport
 
@@ -16,16 +16,18 @@ See [ARCHITECTURE.md](../../../ARCHITECTURE.md) for the canonical topology.
 
 The browser exposes the room URL and display-name form without accessing local
 devices. After an explicit join action it requests a scoped account token,
-registers events, joins, creates and publishes local tracks, and subscribes to
-audio and video independently. Renewal reuses room and user account. Cleanup
-unregisters, unpublishes, stops, closes, and leaves. Development uses the Next.js
+activates React SDK hooks after the initial Strict Mode replay, joins, creates
+and publishes local tracks, and subscribes to audio and video independently.
+Renewal reuses room and user account. Hook cleanup unpublishes, releases tracks,
+and leaves. Development uses the Next.js
 default Turbopack runtime to preserve this client state across cold route compilation.
 
 ## Ownership Boundaries
 
-`components/room-experience.tsx` owns UI phases, `lib/media-devices.ts` owns
-devices, `app/api/token/route.ts` and `lib/token.ts` own credentials, and
-`lib/rtc-session.ts` owns the RTC client lifecycle. Agora owns media transport.
+`components/room-experience.tsx` owns token request and join UI,
+`components/room-call.tsx` owns React SDK hooks and device controls,
+`components/room-experience-loader.tsx` owns the provider client, and
+`app/api/token/route.ts` and `lib/token.ts` own credentials. Agora owns transport.
 
 ## Runtime Modes
 

@@ -17,12 +17,12 @@ docs/ai/      progressive coding-agent context
 ## Core Files
 
 - `app/api/token/route.ts`: HTTP token contract
-- `components/room-experience.tsx`: named join, post-join devices, and call state machine
+- `components/room-experience.tsx`: named join and abortable token request
+- `components/room-call.tsx`: hook-owned RTC lifecycle, devices, and call state
 - `components/room-experience-loader.tsx`: browser-only RTC SDK boundary
 - `components/join-room.tsx`: display-name and invitation form
 - `lib/token.ts`: publisher token construction
-- `lib/rtc-session.ts`: join, media events, renewal, cleanup
-- `lib/media-devices.ts`: track and device ownership
+- `lib/media-devices.ts`: device switching and change listeners
 - `lib/room-id.ts`: UUID room validation
 - `lib/rtc-identity.ts`: display-name validation and string account encoding
 - `next.config.mjs`: Next.js and standalone build configuration

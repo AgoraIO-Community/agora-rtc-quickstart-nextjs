@@ -13,7 +13,7 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 ## Current System Shape
 
 - Next.js App Router and React
-- direct `agora-rtc-sdk-ng` integration; do not add `agora-rtc-react`
+- `agora-rtc-react` owns browser RTC join, publication, subscription, and track lifecycle
 - server-side RTC token generation through `POST /api/token`
 - URL-only room identity with no room database
 - one browser-owned RTC client per mounted room session
@@ -33,20 +33,20 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 - HTTP token contract: `app/api/token/route.ts`
 - RTC token construction: `lib/token.ts`
 - browser token client: `lib/token-client.ts`
-- RTC lifecycle: `lib/rtc-session.ts`
-- device and local-track ownership: `lib/media-devices.ts`
+- RTC lifecycle: `components/room-call.tsx`
+- device switching and change listeners: `lib/media-devices.ts`
 - room validation: `lib/room-id.ts`
 - display-name and RTC account identity: `lib/rtc-identity.ts`
 
 ## Key Files
 
-- `components/room-experience.tsx` - named join, post-join devices, and room UI phases
+- `components/room-experience.tsx` - named join and abortable token request
 - `components/room-experience-loader.tsx` - browser-only RTC SDK boundary
 - `components/join-room.tsx` - display-name and invitation form
 - `components/call-view.tsx` - waiting and peer-present call layout
 - `components/invite-button.tsx` - invitation copy and user feedback
 - `app/api/token/route.ts` - initial named account token and same-account renewal
-- `lib/rtc-session.ts` - join, publish, subscribe, renew, and cleanup
+- `components/room-call.tsx` - React RTC hooks, renewal, devices, and call view
 - `scripts/doctor.mjs` - local runtime and environment checks
 - `ARCHITECTURE.md` - canonical runtime and ownership model
 - `docs/ai/RECIPE.md` - extension points, invariants, and stable contracts
@@ -54,7 +54,7 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 ## Patterns And Anti-Patterns
 
 - Keep RTC imports in client code and App Certificate reads in server code.
-- Extend existing ownership boundaries instead of duplicating RTC clients or token builders.
+- Keep a single provider client and hook-owned RTC lifecycle; do not duplicate token builders.
 - Keep room identity in the URL; do not add persistence without an explicit scope decision.
 - Keep visible UI copy operational and use Lucide icons for familiar controls.
 - Do not treat build, HTTP, token issue, or single-client join as remote media proof.
@@ -65,10 +65,10 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 2. Generate RTC-only tokens with `RtcTokenBuilder.buildTokenWithUserAccount` and `RtcRole.PUBLISHER`.
 3. Pass relative `3600` seconds for token and privilege expiration. Do not pass an epoch timestamp.
 4. Use the same `roomId` and string `userAccount` for token generation, `client.join`, and renewal.
-5. Register client event handlers before `client.join`.
-6. Handle `user-published` independently for audio and video, subscribing before playback.
-7. Keep exactly one RTC client per mounted room session and make cleanup idempotent.
-8. Unpublish tracks, then call `stop()` and `close()` on each local track, then leave the channel.
+5. Let `useJoin` own join and leave; do not manually leave its client.
+6. Subscribe to audio and video independently before rendering or playing remote tracks.
+7. Keep exactly one provider client per mounted room session and activate hooks after the initial Strict Mode replay.
+8. Let React SDK hooks own unpublish and local-track cleanup; do not close their tracks manually.
 9. A missing camera or microphone must not block the other available media type.
 10. Do not add RTM, chat, AI agents, recording, screen sharing, authentication, or persistence without an explicit scope decision.
 11. Do not request camera or microphone access before the user selects **Join Call**.
@@ -87,7 +87,7 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 
 ## Verification
 
-Use doctor, lint, typecheck, and production build as the canonical repository
+Use doctor, lint, typecheck, focused tests, and production build as the canonical repository
 checks. Validate runtime behavior at the layer changed, and keep two-client
 bidirectional audio and video as the complete RTC First Success gate.
 
@@ -99,6 +99,7 @@ pnpm run doctor
 pnpm dev
 pnpm run lint
 pnpm run typecheck
+pnpm run test
 pnpm run build
 pnpm run verify
 ```

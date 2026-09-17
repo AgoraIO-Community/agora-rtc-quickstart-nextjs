@@ -13,11 +13,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "typecheck": "tsc --noEmit",
-    "verify": "pnpm run doctor && pnpm run lint && pnpm run typecheck && pnpm run build"
+    "verify": "pnpm run doctor && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build"
   },
   "dependencies": {
-    "agora-rtc-sdk-ng": "4.24.3",
+    "agora-rtc-react": "2.5.1",
     "agora-token": "2.0.5",
     "clsx": "2.1.1",
     "lucide-react": "0.454.0",

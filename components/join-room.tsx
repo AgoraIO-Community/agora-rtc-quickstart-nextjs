@@ -12,6 +12,7 @@ type JoinRoomProps = {
   error: string | null;
   onDisplayNameChange: (value: string) => void;
   onJoin: () => void;
+  onCancel?: () => void;
 };
 
 export function JoinRoom({
@@ -20,6 +21,7 @@ export function JoinRoom({
   error,
   onDisplayNameChange,
   onJoin,
+  onCancel,
 }: JoinRoomProps) {
   const canJoin = isValidDisplayName(displayName) && !joining;
 
@@ -63,6 +65,11 @@ export function JoinRoom({
               {joining ? 'Joining...' : 'Join Call'}
             </Button>
           </div>
+          {joining && onCancel && (
+            <Button type="button" variant="secondary" className="mt-3 w-full" onClick={onCancel}>
+              Cancel
+            </Button>
+          )}
         </form>
       </section>
       <BrandFooter />

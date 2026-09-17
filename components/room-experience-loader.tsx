@@ -1,11 +1,27 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useRef, type ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 import { BrandFooter } from '@/components/brand-footer';
 
 const RoomExperience = dynamic(
-  () => import('@/components/room-experience').then((module) => module.RoomExperience),
+  async () => {
+    const [{ RoomExperience }, { AgoraRTCProvider, default: AgoraRTC }] = await Promise.all([
+      import('@/components/room-experience'),
+      import('agora-rtc-react'),
+    ]);
+    function Provider({ children }: { children: ReactNode }) {
+      // The client must survive Strict Mode's simulated remount; useMemo recreates it.
+      /* eslint-disable react-hooks/refs */
+      const client = useRef<ReturnType<typeof AgoraRTC.createClient> | null>(null);
+      if (!client.current) client.current = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+      const rtcClient = client.current;
+      /* eslint-enable react-hooks/refs */
+      return <AgoraRTCProvider client={rtcClient}>{children}</AgoraRTCProvider>;
+    }
+    return { default: ({ roomId }: { roomId: string }) => <Provider><RoomExperience roomId={roomId} /></Provider> };
+  },
   {
     ssr: false,
     loading: () => (

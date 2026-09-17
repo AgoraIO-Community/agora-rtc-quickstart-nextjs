@@ -2,37 +2,12 @@ import type {
   IAgoraRTC,
   ICameraVideoTrack,
   IMicrophoneAudioTrack,
-} from 'agora-rtc-sdk-ng';
+} from 'agora-rtc-react';
 
 export type LocalMedia = {
   microphone: IMicrophoneAudioTrack | null;
   camera: ICameraVideoTrack | null;
 };
-
-export type MediaSdk = Pick<
-  IAgoraRTC,
-  | 'createMicrophoneAudioTrack'
-  | 'createCameraVideoTrack'
-  | 'getMicrophones'
-  | 'getCameras'
-  | 'onMicrophoneChanged'
-  | 'onCameraChanged'
->;
-
-export async function createLocalMedia(
-  sdk: Pick<MediaSdk, 'createMicrophoneAudioTrack' | 'createCameraVideoTrack'>,
-): Promise<LocalMedia> {
-  const [microphoneResult, cameraResult] = await Promise.allSettled([
-    sdk.createMicrophoneAudioTrack({ encoderConfig: 'speech_standard' }),
-    sdk.createCameraVideoTrack({ encoderConfig: '720p_2' }),
-  ]);
-
-  return {
-    microphone:
-      microphoneResult.status === 'fulfilled' ? microphoneResult.value : null,
-    camera: cameraResult.status === 'fulfilled' ? cameraResult.value : null,
-  };
-}
 
 type ConfigurableTrack = {
   setDevice(deviceId: string): Promise<void>;

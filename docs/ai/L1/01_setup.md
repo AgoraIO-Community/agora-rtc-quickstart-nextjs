@@ -50,6 +50,7 @@ pnpm run start
 ```bash
 pnpm run lint
 pnpm run typecheck
+pnpm run test
 pnpm run build
 pnpm run verify
 ```

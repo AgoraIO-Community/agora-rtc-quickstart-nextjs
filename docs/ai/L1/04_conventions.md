@@ -9,15 +9,15 @@ ESLint rules. Keep RTC SDK access in client modules and secrets in server module
 
 ## Runtime Patterns
 
-Register events before join. Handle `user-published` separately for audio and
-video. Keep one client per mounted room and one room/user account across token
-and renewal. Join before creating local tracks, keep cleanup idempotent, and
-preserve partial media when one device fails. Surface generic user errors
+Use the React SDK hooks for join, publication, remote subscriptions, and track
+cleanup. Activate after Strict Mode's initial replay. Keep one provider client
+per mounted room and one room/user account across token and renewal. Join before
+creating local tracks and preserve partial media when one device fails. Surface generic user errors
 without credential data.
 
 ## Verification Patterns
 
-Run doctor, lint, typecheck, and production build before shipping. Validate
+Run doctor, lint, typecheck, tests, and production build before shipping. Validate
 changed runtime behavior at its owning boundary, and use two independent clients
 for complete bidirectional RTC media evidence.
 

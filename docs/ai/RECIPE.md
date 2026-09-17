@@ -38,7 +38,7 @@ subscribes to remote audio and video, renews tokens, and releases resources.
 ## Baseline Implementation Guidance
 
 Treat this repository's source and [ARCHITECTURE.md](../../ARCHITECTURE.md) as the
-baseline. Preserve the direct RTC SDK lifecycle, token route, environment names,
+baseline. Preserve the React SDK hook lifecycle, token route, environment names,
 room identity, command semantics, and evidence levels. Do not recreate join or
 token behavior from memory.
 
@@ -55,7 +55,7 @@ token behavior from memory.
 
 - `server-only-certificate`: only the Next.js server reads `NEXT_AGORA_APP_CERTIFICATE`.
 - `rtc-identity-consistency`: token issue, join, and renewal use one room ID and string user account.
-- `rtc-resource-cleanup`: register handlers before join; unpublish, stop, close, and leave during idempotent cleanup.
+- `rtc-resource-cleanup`: activate hooks after Strict Mode's initial effect replay; let hooks own unpublish, track release, and leave.
 - Audio and video publication events are independent.
 - One missing media device does not block the other available media type.
 - Local devices are not requested before Join Call; system-selected devices are the default path afterward.
@@ -66,7 +66,7 @@ token behavior from memory.
 
 - `POST /api/token` accepts `{ roomId, displayName }` initially or `{ roomId, userAccount }` for renewal and returns `appId`, `roomId`, `userAccount`, `token`, and `expiresIn` under `Cache-Control: no-store`.
 - `.env.local` uses `NEXT_PUBLIC_AGORA_APP_ID` and server-only `NEXT_AGORA_APP_CERTIFICATE`.
-- `pnpm run verify` is the canonical doctor, lint, typecheck, and build command.
+- `pnpm run verify` is the canonical doctor, lint, typecheck, test, and build command.
 - Docker runs standalone Next.js on port 3000 and never bakes the certificate into the image.
 
 ## Internal / Subject To Change

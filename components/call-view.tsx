@@ -4,10 +4,9 @@ import Image from 'next/image';
 import type {
   ConnectionState,
   IAgoraRTCRemoteUser,
-} from 'agora-rtc-sdk-ng';
+} from 'agora-rtc-react';
 import type { LocalMedia } from '@/lib/media-devices';
 import { getDisplayNameFromRtcUserAccount } from '@/lib/rtc-identity';
-import { Button } from '@/components/ui/button';
 import { CallControls } from '@/components/call-controls';
 import { ConnectionStatus } from '@/components/connection-status';
 import { InviteButton } from '@/components/invite-button';
@@ -69,9 +68,6 @@ export function CallView({
         </div>
         <div className="flex shrink-0 items-center gap-3">
           <ConnectionStatus state={connectionState} />
-          <Button variant="destructive" className="hidden h-8 px-3 text-xs sm:inline-flex" onClick={onLeave}>
-            Leave Call
-          </Button>
         </div>
       </header>
 

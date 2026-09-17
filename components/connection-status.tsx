@@ -1,6 +1,6 @@
 'use client';
 
-import type { ConnectionState } from 'agora-rtc-sdk-ng';
+import type { ConnectionState } from 'agora-rtc-react';
 
 const labels: Record<ConnectionState, string> = {
   DISCONNECTED: 'Disconnected',

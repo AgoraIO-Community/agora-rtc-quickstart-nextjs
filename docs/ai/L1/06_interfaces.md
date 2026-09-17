@@ -12,8 +12,8 @@ account returns 400. Missing configuration or token failure returns a generic
 
 ## Events And Media
 
-`RtcSession` handles `user-joined`, `user-published`, `user-unpublished`,
-`user-left`, `connection-state-change`, and token expiry warnings. SDK
+React SDK hooks handle join, independent audio/video subscriptions, playback,
+publication, and cleanup; the call component handles token expiry warnings. SDK
 `exception` events are quality and recovery signals, not application errors,
 so they remain in SDK diagnostics instead of the red error UI.
 Audio and video publications arrive independently. Remote audio is played after
@@ -27,7 +27,7 @@ at runtime; neither credential is a build argument.
 
 ## External Services
 
-- Agora RTC Web SDK `4.24.3`
+- Agora RTC React SDK `2.5.1` (wraps Web SDK)
 - `agora-token` `2.0.5`
 - Agora RTC channel service
 

@@ -4,7 +4,7 @@
 
 This quickstart is a one-to-one browser calling application. Next.js serves the
 UI and a request-scoped token route. Each browser owns its local media and one
-Agora RTC Web SDK client. Agora carries audio and video between clients that
+Agora RTC React SDK client. Agora carries audio and video between clients that
 join the same room with different string user accounts.
 
 ## Component Topology
@@ -40,26 +40,25 @@ runtime can reload an active room when another browser first compiles `/`.
    server validates both, creates a unique ASCII RTC user account containing the
    encoded name, and returns App ID, room ID, account, token, and relative
    expiration under `Cache-Control: no-store`.
-5. `RtcSession` registers Agora event handlers, joins with the returned room ID
-   and account, then creates and publishes every available local track.
-6. `user-published` is handled independently for audio and video. The client
-   subscribes before playing audio or rendering video.
+5. The dynamically loaded provider creates one client. After the initial Strict
+   Mode effect replay, `useJoin` joins with the returned room ID and account;
+   local-track hooks create available tracks and `usePublish` publishes them.
+6. React SDK hooks subscribe to audio and video independently before playback.
 7. Before token expiry, the client requests a new token with the same room ID
    and user account and calls `renewToken`.
-8. Cleanup unregisters listeners, unpublishes local tracks, stops and closes
-   every owned track, and leaves the channel. Cleanup is idempotent.
+8. Unmounting the call lets React SDK hooks unpublish, release local tracks, and
+   leave. A pending token request is aborted when its room component unmounts.
 
 ## Ownership Boundaries
 
 - `components/room-experience.tsx` owns named join, device initialization after
   join, and the `setup`, `joining`, and `connected` UI phases.
 - `components/join-room.tsx` owns the display-name and invitation form.
-- `lib/media-devices.ts` owns local track creation, switching, enablement,
-  device-change listeners, and track release.
+- `components/room-call.tsx` owns the React SDK hooks and token renewal.
+- `lib/media-devices.ts` supports switching, enablement, and device-change listeners.
 - `app/api/token/route.ts` owns the HTTP request and response contract.
 - `lib/token.ts` owns RTC publisher token construction and expiration.
-- `lib/rtc-session.ts` owns the Agora client, events, publish/subscribe, renewal,
-  and session cleanup.
+- `components/room-experience-loader.tsx` creates the browser-only provider client.
 - Agora owns channel transport and remote media delivery. The application has no
   room database or persistent session service.
 
@@ -75,10 +74,10 @@ must use the same room ID and string user account.
 
 ## RTC Lifecycle
 
-There is exactly one `RtcSession` per mounted room session. Event handlers are
-registered before join so existing publications are not missed. Local tracks are
-created only after join, so opening an invitation does not contend for devices.
-Audio and video publication events remain separate. A missing camera or
+There is exactly one provider client per mounted room session. React SDK hooks
+activate after explicit Join Call and the initial Strict Mode effect replay.
+Local tracks are created only after join, so opening an invitation does not
+contend for devices. Audio and video subscriptions remain separate. A missing camera or
 microphone does not block the other available media type. Device changes refresh
 the available list; manual selection is available during the call.
 Agora SDK `exception` events report quality degradation and recovery; they are
@@ -117,7 +116,7 @@ Malformed JSON or invalid identifiers return 400. Missing credentials or token
 construction failures return a generic 500 response. All responses are
 non-cacheable.
 
-The external runtime dependencies are Agora RTC Web SDK `4.24.3` and
+The external runtime dependencies are Agora RTC React SDK `2.5.1` (wrapping the Web SDK) and
 `agora-token` `2.0.5`.
 
 ## Production Boundary

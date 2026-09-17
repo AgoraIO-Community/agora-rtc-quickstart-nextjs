@@ -1,7 +1,7 @@
 # Agora RTC Next.js Quickstart
 
 A one-to-one audio and video calling starter built with Next.js and the Agora
-RTC Web SDK. Create a room, enter your name, join from one client, then open
+RTC React SDK. Create a room, enter your name, join from one client, then open
 the same room URL from another independent client for complete RTC media.
 
 ![Agora RTC Next.js quickstart home](./.github/assets/rtc-nextjs-home.png)
@@ -84,6 +84,8 @@ On the room screen, copy the invite link, enter your display name, and select
 **Join Call**. The browser and Agora SDK request the system devices only after
 the join command; open **Select devices** during the call when a manual choice
 is needed.
+If joining waits on browser device permission, **Cancel** returns to the join
+form and leaves any RTC channel already joined.
 A successful single-client run:
 
 - issues an RTC token;
@@ -113,7 +115,7 @@ When testing twice on one computer:
 - named room entry without pre-join device capture
 - visible invite actions before join and while waiting for a participant
 - microphone and camera controls during the call
-- direct `agora-rtc-sdk-ng` join, publish, subscribe, renewal, and cleanup
+- `agora-rtc-react` hook-owned join, publish, subscribe, and cleanup with token renewal
 - URL-only UUID rooms with no database
 - server-generated RTC publisher tokens
 - single-client waiting and two-participant call states
@@ -126,10 +128,11 @@ The home page creates a UUID room URL. The room exposes the invitation URL and a
 display-name field without accessing local devices. `POST /api/token` validates
 the room and participant identity, creates or reuses a unique ASCII RTC user
 account, and returns a non-cacheable RTC token.
-The browser registers events, joins, creates and publishes local tracks, and
-subscribes to remote audio and video independently. Token renewal reuses the
+The React SDK joins, creates and publishes local tracks, and subscribes to
+remote audio and video independently. Token renewal reuses the
 same room and user account.
-Leaving releases listeners, tracks, devices, and the RTC client.
+Leaving releases tracks and leaves the channel; the provider client remains
+until the room is unmounted.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the canonical topology and lifecycle.
 
@@ -154,13 +157,14 @@ pnpm run start         # start an existing production build
 ```bash
 pnpm run lint          # ESLint
 pnpm run typecheck     # TypeScript without emit
+pnpm run test          # focused regression tests
 pnpm run build         # production build
 ```
 
 ### CI / Pre-ship
 
 ```bash
-pnpm run verify        # doctor + lint + typecheck + build
+pnpm run verify        # doctor + lint + typecheck + test + build
 ```
 
 ## Architecture
@@ -176,13 +180,13 @@ Docker, and production boundaries.
 
 - `app/api/token/route.ts` - RTC token issue and renewal route
 - `app/room/[roomId]/page.tsx` - validated room entry
-- `components/room-experience.tsx` - named join and call state machine
+- `components/room-experience.tsx` - named join and abortable token request
 - `components/room-experience-loader.tsx` - browser-only RTC SDK boundary
 - `components/join-room.tsx` - display-name and invitation form
 - `components/invite-button.tsx` - shared invitation copy and feedback
 - `components/call-view.tsx` - one-to-one call layout
-- `lib/rtc-session.ts` - Agora client lifecycle
-- `lib/media-devices.ts` - partial media and device handling
+- `components/room-call.tsx` - React RTC lifecycle and partial media
+- `lib/media-devices.ts` - device switching and change listeners
 - `lib/rtc-identity.ts` - display-name validation and RTC account encoding
 - `docs/ai/` - progressive coding-agent context
 - `AGENTS.md` - coding-agent loading and implementation constraints
@@ -246,7 +250,7 @@ authorization, abuse controls, and monitoring.
 - [Contributing](CONTRIBUTING.md)
 - [AI repository card](docs/ai/L0_repo_card.md)
 - [Agora Video Calling React Quickstart](https://docs.agora.io/en/video-calling/get-started/get-started-sdk?platform=react-js)
-- [Agora RTC Web SDK API](https://api-ref.agora.io/en/video-sdk/web/4.x/index.html)
+- [Agora RTC React SDK API](https://api-ref.agora.io/en/video-sdk/reactjs/2.x/)
 - [Deploy a Token Server](https://docs.agora.io/en/video-calling/token-authentication/deploy-token-server)
 
 ## License
