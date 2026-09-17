@@ -6,11 +6,11 @@
 
 | Field | Value |
 | --- | --- |
-| Repo | `littleDogWang/agora-rtc-nextjs-quickstart` |
+| Repo | `AgoraIO-Community/agora-rtc-quickstart-nextjs` |
 | Type | `Agora RTC Web quickstart` |
 | Language | TypeScript, Next.js 16, React 19 |
 | Deploy Target | Vercel and Docker |
-| Owner | `littleDogWang` |
+| Owner | `AgoraIO-Community` |
 | Last Reviewed | 2026-09-02 |
 | Recipe Role | `base` |
 | Recipe Version | `1.0.0` |

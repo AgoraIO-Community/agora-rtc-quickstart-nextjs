@@ -56,8 +56,8 @@ clear the in-memory RTC session.
 ## Working From A Clone
 
 ```bash
-git clone https://github.com/littleDogWang/agora-rtc-nextjs-quickstart.git
-cd agora-rtc-nextjs-quickstart
+git clone https://github.com/AgoraIO-Community/agora-rtc-quickstart-nextjs.git
+cd agora-rtc-quickstart-nextjs
 pnpm install --frozen-lockfile
 cp env.local.example .env.local
 ```
@@ -206,7 +206,7 @@ Docker, and production boundaries.
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FlittleDogWang%2Fagora-rtc-nextjs-quickstart&project-name=agora-rtc-nextjs-quickstart&repository-name=agora-rtc-nextjs-quickstart&env=NEXT_PUBLIC_AGORA_APP_ID%2CNEXT_AGORA_APP_CERTIFICATE&envDescription=Agora+credentials+needed+to+run+the+RTC+quickstart&envLink=https%3A%2F%2Fgithub.com%2FlittleDogWang%2Fagora-rtc-nextjs-quickstart%23run-it&demo-title=Agora+RTC+Next.js+Quickstart&demo-description=One-to-one+audio+and+video+calling+with+Agora+RTC+and+Next.js)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FAgoraIO-Community%2Fagora-rtc-quickstart-nextjs&project-name=agora-rtc-quickstart-nextjs&repository-name=agora-rtc-quickstart-nextjs&env=NEXT_PUBLIC_AGORA_APP_ID%2CNEXT_AGORA_APP_CERTIFICATE&envDescription=Agora+credentials+needed+to+run+the+RTC+quickstart&envLink=https%3A%2F%2Fgithub.com%2FAgoraIO-Community%2Fagora-rtc-quickstart-nextjs%23run-it&demo-title=Agora+RTC+Next.js+Quickstart&demo-description=One-to-one+audio+and+video+calling+with+Agora+RTC+and+Next.js)
 
 The Vercel account must have repository access. Configure both environment
 variables, deploy, verify single-client join, then use two independent clients
