@@ -15,6 +15,7 @@ coverage/
 # local tooling
 .DS_Store
 .agora/
+docs/superpowers/
 *.log
 .vercel/
 
