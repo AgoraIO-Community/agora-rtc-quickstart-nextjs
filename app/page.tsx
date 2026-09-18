@@ -1,5 +1,5 @@
-import { RoomHome } from '@/components/room-home';
+import { ChannelHome } from '@/components/channel-home';
 
 export default function Home() {
-  return <RoomHome />;
+  return <ChannelHome />;
 }

@@ -1,13 +1,13 @@
 export type RtcTokenResponse = {
   appId: string;
-  roomId: string;
+  channelName: string;
   userAccount: string;
   token: string;
   expiresIn: number;
 };
 
 export async function requestRtcToken(
-  roomId: string,
+  channelName: string,
   identity: { displayName: string } | { userAccount: string },
   fetcher: typeof fetch = fetch,
   signal?: AbortSignal,
@@ -15,7 +15,7 @@ export async function requestRtcToken(
   const response = await fetcher('/api/token', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ roomId, ...identity }),
+    body: JSON.stringify({ channelName, ...identity }),
     cache: 'no-store',
     signal,
   });

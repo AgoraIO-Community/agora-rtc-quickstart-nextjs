@@ -3,17 +3,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2, Video } from 'lucide-react';
-import { createRoomId } from '@/lib/room-id';
+import { createChannelName } from '@/lib/channel-name';
 import { BrandFooter } from '@/components/brand-footer';
 import { Button } from '@/components/ui/button';
 
-export function RoomHome() {
+export function ChannelHome() {
   const router = useRouter();
   const [creating, setCreating] = useState(false);
 
-  const createRoom = () => {
+  const createChannel = () => {
     setCreating(true);
-    router.push(`/room/${createRoomId()}`);
+    router.push(`/channel/${createChannelName()}`);
   };
 
   return (
@@ -24,11 +24,11 @@ export function RoomHome() {
         </div>
         <h1 className="text-[28px] font-medium leading-[1.2] text-white">Start a Video Call</h1>
         <p className="mt-[14px] text-sm font-medium leading-6 text-[#777e8d]">
-          Create a private room link and invite another participant.
+          Create a private channel link and invite another participant.
         </p>
-        <Button className="mt-10 w-full" onClick={createRoom} disabled={creating}>
+        <Button className="mt-10 w-full" onClick={createChannel} disabled={creating}>
           {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
-          {creating ? 'Creating...' : 'Create Room'}
+          {creating ? 'Creating...' : 'Create Channel'}
         </Button>
       </section>
       <BrandFooter />

@@ -6,10 +6,10 @@ import { Loader2 } from 'lucide-react';
 import { BrandFooter } from '@/components/brand-footer';
 import { MediaPlaybackGuard } from '@/components/media-playback-guard';
 
-const RoomExperience = dynamic(
+const ChannelExperience = dynamic(
   async () => {
-    const [{ RoomExperience }, { AgoraRTCProvider, default: AgoraRTC }] = await Promise.all([
-      import('@/components/room-experience'),
+    const [{ ChannelExperience }, { AgoraRTCProvider, default: AgoraRTC }] = await Promise.all([
+      import('@/components/channel-experience'),
       import('agora-rtc-react'),
     ]);
     function Provider({ children }: { children: ReactNode }) {
@@ -21,7 +21,7 @@ const RoomExperience = dynamic(
       /* eslint-enable react-hooks/refs */
       return <AgoraRTCProvider client={rtcClient}>{children}</AgoraRTCProvider>;
     }
-    return { default: ({ roomId }: { roomId: string }) => <Provider><RoomExperience roomId={roomId} /></Provider> };
+    return { default: ({ channelName }: { channelName: string }) => <Provider><ChannelExperience channelName={channelName} /></Provider> };
   },
   {
     ssr: false,
@@ -34,11 +34,11 @@ const RoomExperience = dynamic(
   },
 );
 
-export function RoomExperienceLoader({ roomId }: { roomId: string }) {
+export function ChannelExperienceLoader({ channelName }: { channelName: string }) {
   return (
     <>
       <MediaPlaybackGuard />
-      <RoomExperience roomId={roomId} />
+      <ChannelExperience channelName={channelName} />
     </>
   );
 }

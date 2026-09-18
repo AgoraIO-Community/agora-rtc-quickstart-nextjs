@@ -4,13 +4,13 @@ import { test } from 'node:test';
 import { isExpectedMediaPlaybackInterruption } from '../lib/media-playback.ts';
 
 test('keeps RTC track players stable across React re-renders', async () => {
-  const [roomCall, videoTile] = await Promise.all([
-    readFile(new URL('../components/room-call.tsx', import.meta.url), 'utf8'),
+  const [channelCall, videoTile] = await Promise.all([
+    readFile(new URL('../components/channel-call.tsx', import.meta.url), 'utf8'),
     readFile(new URL('../components/video-tile.tsx', import.meta.url), 'utf8'),
   ]);
 
-  assert.match(roomCall, /<TrackBoundary>/);
-  assert.match(roomCall, /<\/TrackBoundary>/);
+  assert.match(channelCall, /<TrackBoundary>/);
+  assert.match(channelCall, /<\/TrackBoundary>/);
   assert.doesNotMatch(videoTile, /videoPlayerConfig=\{\{/);
   assert.match(videoTile, /videoPlayerConfig=\{LOCAL_VIDEO_PLAYER_CONFIG\}/);
   assert.match(videoTile, /videoPlayerConfig=\{REMOTE_VIDEO_PLAYER_CONFIG\}/);
@@ -34,12 +34,12 @@ test('recognizes only the benign browser interruption emitted during RTC teardow
 test('keeps the playback rejection guard mounted outside the call session', async () => {
   const [guard, loader] = await Promise.all([
     readFile(new URL('../components/media-playback-guard.tsx', import.meta.url), 'utf8'),
-    readFile(new URL('../components/room-experience-loader.tsx', import.meta.url), 'utf8'),
+    readFile(new URL('../components/channel-experience-loader.tsx', import.meta.url), 'utf8'),
   ]);
 
   assert.match(guard, /event\.preventDefault\(\)/);
   assert.match(guard, /event\.stopImmediatePropagation\(\)/);
   assert.match(guard, /HTMLMediaElement\.prototype\.play = function guardedPlay/);
   assert.match(guard, /HTMLMediaElement\.prototype\.play = originalPlay/);
-  assert.match(loader, /<MediaPlaybackGuard\s*\/>[\s\S]*<RoomExperience roomId=\{roomId\}/);
+  assert.match(loader, /<MediaPlaybackGuard\s*\/>[\s\S]*<ChannelExperience channelName=\{channelName\}/);
 });

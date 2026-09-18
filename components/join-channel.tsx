@@ -6,7 +6,7 @@ import { InviteButton } from '@/components/invite-button';
 import { Button } from '@/components/ui/button';
 import { isValidDisplayName } from '@/lib/rtc-identity';
 
-type JoinRoomProps = {
+type JoinChannelProps = {
   displayName: string;
   joining: boolean;
   error: string | null;
@@ -15,14 +15,14 @@ type JoinRoomProps = {
   onCancel?: () => void;
 };
 
-export function JoinRoom({
+export function JoinChannel({
   displayName,
   joining,
   error,
   onDisplayNameChange,
   onJoin,
   onCancel,
-}: JoinRoomProps) {
+}: JoinChannelProps) {
   const canJoin = isValidDisplayName(displayName) && !joining;
 
   return (

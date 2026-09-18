@@ -15,12 +15,12 @@ import AgoraRTC, {
   useRemoteVideoTracks,
 } from 'agora-rtc-react';
 import { CallView } from '@/components/call-view';
-import { JoinRoom } from '@/components/join-room';
+import { JoinChannel } from '@/components/join-channel';
 import { setMediaEnabled, subscribeToDeviceChanges, switchMediaDevice } from '@/lib/media-devices';
 import type { RtcTokenResponse } from '@/lib/token-client';
 import { requestRtcToken } from '@/lib/token-client';
 
-export function RoomCall({
+export function ChannelCall({
   credentials,
   displayName,
   onLeave,
@@ -52,7 +52,7 @@ export function RoomCall({
 
   const join = useJoin({
     appid: credentials.appId,
-    channel: credentials.roomId,
+    channel: credentials.channelName,
     token: credentials.token,
     uid: credentials.userAccount,
   }, ready);
@@ -70,7 +70,7 @@ export function RoomCall({
   const connectionState = useConnectionState();
 
   useEffect(() => {
-    if (join.error) onLeave('Unable to join the room.');
+    if (join.error) onLeave('Unable to join the channel.');
   }, [join.error, onLeave]);
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export function RoomCall({
   useEffect(() => {
     const renew = async () => {
       try {
-        const response = await requestRtcToken(credentials.roomId, { userAccount: credentials.userAccount });
+        const response = await requestRtcToken(credentials.channelName, { userAccount: credentials.userAccount });
         if (active.current) await client.renewToken(response.token);
       } catch {
         if (active.current) setError('Unable to renew the RTC token.');
@@ -99,7 +99,7 @@ export function RoomCall({
       client.off('token-privilege-will-expire', renew);
       client.off('token-privilege-did-expire', renew);
     };
-  }, [client, credentials.roomId, credentials.userAccount]);
+  }, [client, credentials.channelName, credentials.userAccount]);
 
   const refreshDevices = useCallback(async () => {
     const [nextMicrophones, nextCameras] = await Promise.all([
@@ -148,7 +148,7 @@ export function RoomCall({
   };
 
   if (!media.microphone && !media.camera) {
-    return <JoinRoom displayName={displayName} joining error={null} onDisplayNameChange={() => {}} onJoin={() => {}} onCancel={() => onLeave()} />;
+    return <JoinChannel displayName={displayName} joining error={null} onDisplayNameChange={() => {}} onJoin={() => {}} onCancel={() => onLeave()} />;
   }
 
   return (

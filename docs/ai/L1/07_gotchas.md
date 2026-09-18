@@ -10,26 +10,26 @@
 - Empty environment values fail doctor and token requests.
 - Browser permission denial after Join Call can leave only one or no local media tracks.
 - Browser and operating-system device sharing determines whether two tabs can capture the same physical camera and microphone.
-- `next dev --webpack` can reload an active room when another browser first
+- `next dev --webpack` can reload an active channel when another browser first
   compiles `/`; keep the default Turbopack development runtime.
 
 ## Runtime Pitfalls
 
-- Both clients must use the exact same room URL and different string user accounts.
+- Both clients must use the exact same channel URL and different string user accounts.
 - Audio autoplay can be blocked outside a user gesture flow.
 - Audio and video trigger separate publication events.
-- Renewal must reuse the joined room and user account.
+- Renewal must reuse the joined channel and user account.
 - Opening an invitation must not request local devices; capture begins only after Join Call.
 - Activating RTC hooks during Strict Mode's initial effect replay can duplicate joins or tracks.
 - Recreating video-player configuration objects can stop and reload a playing
   media element; keep them stable and retain the shared `TrackBoundary`.
 - Leaving a joined call destroys Agora-owned media elements and Chrome can reject
-  an internal `play()` with its expected new-load `AbortError`. The room loader's
+  an internal `play()` with its expected new-load `AbortError`. The channel loader's
   playback guard must remain mounted through teardown and match only that exact
   rejection so unrelated failures remain visible.
 - Do not manually leave or close tracks owned by React SDK hooks.
 - Abandoning a pending token request must not start a call after unmount.
-- A public demo token route has no login, room authorization, or rate limiting.
+- A public demo token route has no login, channel authorization, or rate limiting.
 
 ## Documentation Or Contract Drift
 

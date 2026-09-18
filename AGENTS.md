@@ -15,8 +15,8 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 - Next.js App Router and React
 - `agora-rtc-react` owns browser RTC join, publication, subscription, and track lifecycle
 - server-side RTC token generation through `POST /api/token`
-- URL-only room identity with no room database
-- one browser-owned RTC client per mounted room session
+- URL-only channel identity with no channel database
+- one browser-owned RTC client per mounted channel session
 - Vercel and standalone Docker production modes
 
 ## Supported Modes
@@ -29,24 +29,24 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 ## Routing / Ownership
 
 - UI and interaction state: `components/`
-- validated room route: `app/room/[roomId]/page.tsx`
+- validated channel route: `app/channel/[channelName]/page.tsx`
 - HTTP token contract: `app/api/token/route.ts`
 - RTC token construction: `lib/token.ts`
 - browser token client: `lib/token-client.ts`
-- RTC lifecycle: `components/room-call.tsx`
+- RTC lifecycle: `components/channel-call.tsx`
 - device switching and change listeners: `lib/media-devices.ts`
-- room validation: `lib/room-id.ts`
+- channel-name validation: `lib/channel-name.ts`
 - display-name and RTC account identity: `lib/rtc-identity.ts`
 
 ## Key Files
 
-- `components/room-experience.tsx` - named join and abortable token request
-- `components/room-experience-loader.tsx` - browser-only RTC SDK boundary
-- `components/join-room.tsx` - display-name and invitation form
+- `components/channel-experience.tsx` - named join and abortable token request
+- `components/channel-experience-loader.tsx` - browser-only RTC SDK boundary
+- `components/join-channel.tsx` - display-name and invitation form
 - `components/call-view.tsx` - waiting and peer-present call layout
 - `components/invite-button.tsx` - invitation copy and user feedback
 - `app/api/token/route.ts` - initial named account token and same-account renewal
-- `components/room-call.tsx` - React RTC hooks, renewal, devices, and call view
+- `components/channel-call.tsx` - React RTC hooks, renewal, devices, and call view
 - `scripts/doctor.mjs` - local runtime and environment checks
 - `ARCHITECTURE.md` - canonical runtime and ownership model
 - `docs/ai/RECIPE.md` - extension points, invariants, and stable contracts
@@ -55,7 +55,7 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 
 - Keep RTC imports in client code and App Certificate reads in server code.
 - Keep a single provider client and hook-owned RTC lifecycle; do not duplicate token builders.
-- Keep room identity in the URL; do not add persistence without an explicit scope decision.
+- Keep channel identity in the URL; do not add persistence without an explicit scope decision.
 - Keep visible UI copy operational and use Lucide icons for familiar controls.
 - Do not treat build, HTTP, token issue, or single-client join as remote media proof.
 
@@ -64,16 +64,16 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 1. Keep `NEXT_AGORA_APP_CERTIFICATE` server-side only. Never return, log, screenshot, or bundle it.
 2. Generate RTC-only tokens with `RtcTokenBuilder.buildTokenWithUserAccount` and `RtcRole.PUBLISHER`.
 3. Pass relative `3600` seconds for token and privilege expiration. Do not pass an epoch timestamp.
-4. Use the same `roomId` and string `userAccount` for token generation, `client.join`, and renewal.
+4. Use the same `channelName` and string `userAccount` for token generation, `client.join`, and renewal.
 5. Let `useJoin` own join and leave; do not manually leave its client.
 6. Subscribe to audio and video independently before rendering or playing remote tracks.
-7. Keep exactly one provider client per mounted room session and activate hooks after the initial Strict Mode replay.
+7. Keep exactly one provider client per mounted channel session and activate hooks after the initial Strict Mode replay.
 8. Let React SDK hooks own unpublish and local-track cleanup; do not close their tracks manually.
 9. A missing camera or microphone must not block the other available media type.
 10. Do not add RTM, chat, AI agents, recording, screen sharing, authentication, or persistence without an explicit scope decision.
 11. Do not request camera or microphone access before the user selects **Join Call**.
 12. Keep `pnpm dev` on the Next.js default Turbopack runtime; forcing Webpack can
-    reload active room clients during cold cross-browser route compilation.
+    reload active channel clients during cold cross-browser route compilation.
 13. Keep audio and video players under `TrackBoundary` and pass stable player
     configuration objects so React re-renders do not interrupt active playback.
 14. Suppress only the browser's exact expected `AbortError` for a `play()` call
@@ -119,7 +119,7 @@ Docker commands and environment ownership are documented in README.
 - Doctor, lint, typecheck, and build may use obviously synthetic credentials.
 - Docker build, startup, and HTTP smoke may use synthetic credentials and prove packaging only.
 - A browser join requires real credentials, network access, and device permission.
-- Complete RTC success requires two independent clients with different user accounts in the same room and observed audio and video receipt in both directions.
+- Complete RTC success requires two independent clients with different user accounts in the same channel and observed audio and video receipt in both directions.
 - Never print, commit, screenshot, or bake a real App Certificate into an image.
 
 ## Done Criteria
@@ -148,7 +148,7 @@ Docker behavior consistent.
 ## Deployment Boundary
 
 Vercel and Docker deployments are public development demos unless application
-access controls are added. The token route has no login, room authorization, or
+access controls are added. The token route has no login, channel authorization, or
 rate limiting. Never describe it as a production token service. Production use
-requires authentication, room authorization, server-controlled identity and
+requires authentication, channel authorization, server-controlled identity and
 role, abuse controls, and monitoring.

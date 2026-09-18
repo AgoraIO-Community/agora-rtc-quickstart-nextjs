@@ -4,9 +4,9 @@
 
 ## Browser Or User-Facing APIs
 
-`POST /api/token` accepts `{ roomId, displayName }` for initial issue or
-`{ roomId, userAccount }` for renewal. Success returns `appId`, `roomId`,
-`userAccount`, `token`, and `expiresIn`. Invalid JSON, room ID, display name, or
+`POST /api/token` accepts `{ channelName, displayName }` for initial issue or
+`{ channelName, userAccount }` for renewal. Success returns `appId`, `channelName`,
+`userAccount`, `token`, and `expiresIn`. Invalid JSON, channel name, display name, or
 account returns 400. Missing configuration or token failure returns a generic
 500. Every response uses `Cache-Control: no-store`.
 

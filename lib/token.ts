@@ -1,11 +1,11 @@
-import * as AgoraToken from 'agora-token';
+import AgoraToken from 'agora-token';
 
 export const TOKEN_EXPIRATION_SECONDS = 3600;
 
 type TokenBuilder = (
   appId: string,
   appCertificate: string,
-  roomId: string,
+  channelName: string,
   userAccount: string,
   role: number,
   tokenExpire: number,
@@ -15,7 +15,7 @@ type TokenBuilder = (
 type BuildRtcTokenInput = {
   appId: string;
   appCertificate: string;
-  roomId: string;
+  channelName: string;
   userAccount: string;
   builder?: TokenBuilder;
 };
@@ -23,7 +23,7 @@ type BuildRtcTokenInput = {
 export function buildRtcToken({
   appId,
   appCertificate,
-  roomId,
+  channelName,
   userAccount,
   builder,
 }: BuildRtcTokenInput): string {
@@ -35,7 +35,7 @@ export function buildRtcToken({
   return build(
     appId,
     appCertificate,
-    roomId,
+    channelName,
     userAccount,
     AgoraToken.RtcRole.PUBLISHER,
     TOKEN_EXPIRATION_SECONDS,

@@ -1,12 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { JoinRoom } from '@/components/join-room';
-import { RoomCall } from '@/components/room-call';
+import { JoinChannel } from '@/components/join-channel';
+import { ChannelCall } from '@/components/channel-call';
 import { isValidDisplayName, normalizeDisplayName } from '@/lib/rtc-identity';
 import { requestRtcToken, type RtcTokenResponse } from '@/lib/token-client';
 
-export function RoomExperience({ roomId }: { roomId: string }) {
+export function ChannelExperience({ channelName }: { channelName: string }) {
   const [displayName, setDisplayName] = useState('');
   const [credentials, setCredentials] = useState<RtcTokenResponse | null>(null);
   const [joining, setJoining] = useState(false);
@@ -31,11 +31,11 @@ export function RoomExperience({ roomId }: { roomId: string }) {
     setJoining(true);
     setError(null);
     try {
-      const result = await requestRtcToken(roomId, { displayName: name }, fetch, controller.signal);
+      const result = await requestRtcToken(channelName, { displayName: name }, fetch, controller.signal);
       if (mounted.current && !controller.signal.aborted) setCredentials(result);
     } catch (nextError) {
       if (mounted.current && !controller.signal.aborted) {
-        setError(nextError instanceof Error ? nextError.message : 'Unable to join the room.');
+        setError(nextError instanceof Error ? nextError.message : 'Unable to join the channel.');
       }
     } finally {
       if (request.current === controller) request.current = null;
@@ -56,14 +56,14 @@ export function RoomExperience({ roomId }: { roomId: string }) {
   };
 
   return credentials ? (
-    <RoomCall
+    <ChannelCall
       key={credentials.userAccount}
       credentials={credentials}
       displayName={displayName}
       onLeave={leave}
     />
   ) : (
-    <JoinRoom
+    <JoinChannel
       displayName={displayName}
       joining={joining}
       error={error}

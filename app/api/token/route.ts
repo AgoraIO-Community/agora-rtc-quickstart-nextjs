@@ -1,5 +1,5 @@
 import { buildRtcToken, TOKEN_EXPIRATION_SECONDS } from '@/lib/token';
-import { isValidRoomId } from '@/lib/room-id';
+import { isValidChannelName } from '@/lib/channel-name';
 import {
   createRtcUserAccount,
   isValidDisplayName,
@@ -25,7 +25,7 @@ export async function POST(request: Request): Promise<Response> {
     return json({ error: 'Agora credentials are not configured.' }, 500);
   }
 
-  let payload: { roomId?: unknown; displayName?: unknown; userAccount?: unknown };
+  let payload: { channelName?: unknown; displayName?: unknown; userAccount?: unknown };
   try {
     payload = (await request.json()) as typeof payload;
   } catch {
@@ -35,8 +35,8 @@ export async function POST(request: Request): Promise<Response> {
   const initialRequest = payload.userAccount === undefined && isValidDisplayName(payload.displayName);
   const renewalRequest = payload.displayName === undefined && isValidRtcUserAccount(payload.userAccount);
 
-  if (!isValidRoomId(payload.roomId) || (!initialRequest && !renewalRequest)) {
-    return json({ error: 'Invalid room ID or participant identity.' }, 400);
+  if (!isValidChannelName(payload.channelName) || (!initialRequest && !renewalRequest)) {
+    return json({ error: 'Invalid channel name or participant identity.' }, 400);
   }
 
   const userAccount = renewalRequest
@@ -47,7 +47,7 @@ export async function POST(request: Request): Promise<Response> {
     const token = buildRtcToken({
       appId,
       appCertificate,
-      roomId: payload.roomId,
+      channelName: payload.channelName,
       userAccount,
     });
 
@@ -57,7 +57,7 @@ export async function POST(request: Request): Promise<Response> {
 
     return json({
       appId,
-      roomId: payload.roomId,
+      channelName: payload.channelName,
       userAccount,
       token,
       expiresIn: TOKEN_EXPIRATION_SECONDS,

@@ -17,14 +17,14 @@ when a public demo is removed.
 
 ## Authentication And Authorization
 
-Tokens use validated UUID room IDs, unique ASCII string accounts containing an
+Tokens use validated UUID channel names, unique ASCII string accounts containing an
 encoded user-entered display name, publisher role, and 3600-second relative
-expiration. Display names are visible to other room participants. The demo has
-no application login, room authorization, server-controlled identity, or rate limiting.
+expiration. Display names are visible to other channel participants. The demo has
+no application login, channel authorization, server-controlled identity, or rate limiting.
 
 ## Input And Output Handling
 
-The token route rejects malformed JSON and invalid room/name/account input. Responses are
+The token route rejects malformed JSON and invalid channel/name/account input. Responses are
 non-cacheable and server failures are generic. Do not add credential values to
 errors, telemetry, or UI state.
 

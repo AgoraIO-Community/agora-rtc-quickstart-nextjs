@@ -3,14 +3,14 @@ recipe_version: 1.0.0
 recipe_status: active
 extension_points:
   - id: ui-experience
-    name: Room and call user experience
+    name: Channel and call user experience
   - id: application-access-control
-    name: Application authentication and room authorization
+    name: Application authentication and channel authorization
 invariants:
   - id: server-only-certificate
     summary: Keep the App Certificate in the server process.
   - id: rtc-identity-consistency
-    summary: Use one room ID and string user account for token, join, and renewal.
+    summary: Use one channel name and string user account for token, join, and renewal.
   - id: rtc-resource-cleanup
     summary: Register before join and release every owned track and client.
 stable_contracts:
@@ -30,7 +30,7 @@ stable_contracts:
 
 ## Recipe Scope
 
-The baseline creates UUID room URLs, exposes invitation actions before join and
+The baseline creates UUID channel URLs, exposes invitation actions before join and
 while waiting, accepts a participant display name, issues server-side RTC
 publisher tokens, joins and then prepares and publishes local media on explicit user action,
 subscribes to remote audio and video, renews tokens, and releases resources.
@@ -39,7 +39,7 @@ subscribes to remote audio and video, renews tokens, and releases resources.
 
 Treat this repository's source and [ARCHITECTURE.md](../../ARCHITECTURE.md) as the
 baseline. Preserve the React SDK hook lifecycle, token route, environment names,
-room identity, command semantics, and evidence levels. Do not recreate join or
+channel identity, command semantics, and evidence levels. Do not recreate join or
 token behavior from memory.
 
 ## Extension Points
@@ -47,30 +47,30 @@ token behavior from memory.
 - `ui-experience`: change `components/` and `app/` presentation while preserving
   explicit join, stable media tiles, and lifecycle ownership. Run the relevant
   browser checks and `pnpm run verify`.
-- `application-access-control`: add login, room authorization, identity, role,
+- `application-access-control`: add login, channel authorization, identity, role,
   rate limiting, and abuse controls around `app/api/token/route.ts`. Update token
   route verification, README, ARCHITECTURE, interfaces, security, and deployment docs.
 
 ## Invariants
 
 - `server-only-certificate`: only the Next.js server reads `NEXT_AGORA_APP_CERTIFICATE`.
-- `rtc-identity-consistency`: token issue, join, and renewal use one room ID and string user account.
+- `rtc-identity-consistency`: token issue, join, and renewal use one channel name and string user account.
 - `rtc-resource-cleanup`: activate hooks after Strict Mode's initial effect replay; let hooks own unpublish, track release, and leave.
 - Audio and video publication events are independent.
 - One missing media device does not block the other available media type.
 - Local devices are not requested before Join Call; system-selected devices are the default path afterward.
 - Development uses the Next.js default Turbopack runtime so cold cross-browser
-  route compilation does not reload an active RTC room.
+  route compilation does not reload an active RTC channel.
 - Audio and video players remain under `TrackBoundary` with stable player
   configuration objects so render-only updates do not restart playback.
-- Keep the room-level playback rejection guard mounted across call teardown. It
+- Keep the channel-level playback rejection guard mounted across call teardown. It
   may ignore only the exact browser `AbortError` caused when RTC teardown
   interrupts `play()` with a new load request, and must preserve every other
   playback rejection.
 
 ## Stable Contracts
 
-- `POST /api/token` accepts `{ roomId, displayName }` initially or `{ roomId, userAccount }` for renewal and returns `appId`, `roomId`, `userAccount`, `token`, and `expiresIn` under `Cache-Control: no-store`.
+- `POST /api/token` accepts `{ channelName, displayName }` initially or `{ channelName, userAccount }` for renewal and returns `appId`, `channelName`, `userAccount`, `token`, and `expiresIn` under `Cache-Control: no-store`.
 - `.env.local` uses `NEXT_PUBLIC_AGORA_APP_ID` and server-only `NEXT_AGORA_APP_CERTIFICATE`.
 - `pnpm run verify` is the canonical doctor, lint, typecheck, test, and build command.
 - Docker runs standalone Next.js on port 3000 and never bakes the certificate into the image.
@@ -95,6 +95,6 @@ When pnpm 9.15.9 is unavailable, install with
 Do not invoke pnpm through npx or create a second lockfile.
 
 Copy the invite link before joining, then join once for the supported single-client
-state. Use the exact same room URL from a second independent client and verify
+state. Use the exact same channel URL from a second independent client and verify
 audio and video receipt both ways.
 Run `pnpm run verify` before shipping a customization.

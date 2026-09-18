@@ -14,20 +14,20 @@ See [ARCHITECTURE.md](../../../ARCHITECTURE.md) for the canonical topology.
 
 ## Data And Event Flow
 
-The browser exposes the room URL and display-name form without accessing local
+The browser exposes the channel URL and display-name form without accessing local
 devices. After an explicit join action it requests a scoped account token,
 activates React SDK hooks after the initial Strict Mode replay, joins, creates
 and publishes local tracks, and subscribes to audio and video independently.
-Renewal reuses room and user account. Hook cleanup unpublishes, releases tracks,
+Renewal reuses channel and user account. Hook cleanup unpublishes, releases tracks,
 and leaves. A shared `TrackBoundary` and stable player configuration prevent
 render-only updates from interrupting active playback. Development uses the
 Next.js default Turbopack runtime to preserve this client state across cold route compilation.
 
 ## Ownership Boundaries
 
-`components/room-experience.tsx` owns token request and join UI,
-`components/room-call.tsx` owns React SDK hooks and device controls,
-`components/room-experience-loader.tsx` owns the provider client, and
+`components/channel-experience.tsx` owns token request and join UI,
+`components/channel-call.tsx` owns React SDK hooks and device controls,
+`components/channel-experience-loader.tsx` owns the provider client, and
 `app/api/token/route.ts` and `lib/token.ts` own credentials. Agora owns transport.
 
 ## Runtime Modes
