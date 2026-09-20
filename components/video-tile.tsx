@@ -1,20 +1,12 @@
 'use client';
 
-import type { ReactNode } from 'react';
-import {
-  LocalVideoTrack,
-  RemoteVideoTrack,
-  type ICameraVideoTrack,
-  type IAgoraRTCRemoteUser,
-  type VideoPlayerConfig,
-} from 'agora-rtc-react';
+import type { ReactNode, RefCallback } from 'react';
+import type { ICameraVideoTrack, IAgoraRTCRemoteUser } from 'agora-rtc-react';
 import { CameraOff, UserRound } from 'lucide-react';
-
-const LOCAL_VIDEO_PLAYER_CONFIG = { fit: 'cover', mirror: true } satisfies VideoPlayerConfig;
-const REMOTE_VIDEO_PLAYER_CONFIG = { fit: 'cover' } satisfies VideoPlayerConfig;
 
 type VideoTileProps = {
   label: string;
+  playerRef?: RefCallback<HTMLDivElement>;
   localTrack?: ICameraVideoTrack | null;
   remoteUser?: IAgoraRTCRemoteUser | null;
   videoEnabled?: boolean;
@@ -24,6 +16,7 @@ type VideoTileProps = {
 
 export function VideoTile({
   label,
+  playerRef,
   localTrack,
   remoteUser,
   videoEnabled = true,
@@ -40,11 +33,7 @@ export function VideoTile({
       className="video-surface relative isolate min-h-[17rem] overflow-hidden rounded-2xl border border-[#303030] bg-[#0d0d0d] text-white md:min-h-0"
       aria-label={`${label} video`}
     >
-      {showVideo && (localTrack ? (
-        <LocalVideoTrack className="absolute inset-0 h-full w-full" track={localTrack} play videoPlayerConfig={LOCAL_VIDEO_PLAYER_CONFIG} />
-      ) : (
-        <RemoteVideoTrack className="absolute inset-0 h-full w-full" track={remoteUser?.videoTrack} play videoPlayerConfig={REMOTE_VIDEO_PLAYER_CONFIG} />
-      ))}
+      <div ref={playerRef} className="absolute inset-0" data-player-target />
 
       {!showVideo && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_50%_35%,#242424_0%,#0d0d0d_62%)] px-6 text-center">

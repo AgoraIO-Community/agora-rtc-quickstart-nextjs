@@ -18,8 +18,10 @@ docs/ai/      progressive coding-agent context
 
 - `app/api/token/route.ts`: HTTP token contract
 - `components/channel-experience.tsx`: named join and abortable token request
-- `components/channel-call.tsx`: hook-owned RTC lifecycle, devices, and call state
-- `components/channel-experience-loader.tsx`: browser-only RTC SDK boundary
+- `components/channel-call.tsx`: original joining/call display conditions
+- `components/agora-runtime.tsx`: persistent provider, RTC hooks, devices and players
+- `components/agora-runtime-loader.tsx`: browser-only dynamic boundary
+- `components/channel-experience-loader.tsx`: SSR-compatible experience and playback guard
 - `components/join-channel.tsx`: display-name and invitation form
 - `lib/token.ts`: publisher token construction
 - `lib/media-devices.ts`: device switching and change listeners

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import type { RefCallback } from 'react';
 import type {
   ConnectionState,
   IAgoraRTCRemoteUser,
@@ -12,7 +13,7 @@ import { ConnectionStatus } from '@/components/connection-status';
 import { InviteButton } from '@/components/invite-button';
 import { VideoTile } from '@/components/video-tile';
 
-type CallViewProps = {
+export type CallViewProps = {
   localDisplayName: string;
   media: LocalMedia;
   remoteUsers: IAgoraRTCRemoteUser[];
@@ -48,7 +49,12 @@ export function CallView({
   onMicrophoneToggle,
   onCameraToggle,
   onLeave,
-}: CallViewProps) {
+  localPlayerRef,
+  remotePlayerRef,
+}: CallViewProps & {
+  localPlayerRef?: RefCallback<HTMLDivElement>;
+  remotePlayerRef?: RefCallback<HTMLDivElement>;
+}) {
   const remoteUser = remoteUsers[0] ?? null;
   const remoteDisplayName = remoteUser
     ? getDisplayNameFromRtcUserAccount(remoteUser.uid) ?? `Participant ${remoteUser.uid}`
@@ -79,8 +85,9 @@ export function CallView({
 
       <div className="flex min-h-0 flex-1 flex-col p-3 md:p-5">
         <div className="grid min-h-0 flex-1 gap-3 md:grid-cols-2 md:gap-4">
-          <VideoTile label={`You · ${localDisplayName}`} localTrack={media.camera} videoEnabled={cameraEnabled} waitingMessage="Your camera is off" />
+          <VideoTile playerRef={localPlayerRef} label={`You · ${localDisplayName}`} localTrack={media.camera} videoEnabled={cameraEnabled} waitingMessage="Your camera is off" />
           <VideoTile
+            playerRef={remotePlayerRef}
             label={remoteDisplayName}
             remoteUser={remoteUser}
             videoEnabled={Boolean(remoteUser?.videoTrack)}

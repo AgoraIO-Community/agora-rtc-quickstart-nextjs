@@ -26,9 +26,16 @@ Next.js default Turbopack runtime to preserve this client state across cold rout
 ## Ownership Boundaries
 
 `components/channel-experience.tsx` owns token request and join UI,
-`components/channel-call.tsx` owns React SDK hooks and device controls,
-`components/channel-experience-loader.tsx` owns the provider client, and
+`components/channel-call.tsx` preserves the original display conditions,
+`components/agora-runtime.tsx` owns the persistent provider, hooks and players, and
 `app/api/token/route.ts` and `lib/token.ts` own credentials. Agora owns transport.
+
+## Rendering
+
+The initial HTML contains the original join form. Presentation components support
+SSR; only AgoraRuntime is behind `ssr: false`. Existing CallView props flow from
+the browser controller to the interface, and local player portals retain the
+shared TrackBoundary. Neither display timing nor provider lifetime changes.
 
 ## Runtime Modes
 

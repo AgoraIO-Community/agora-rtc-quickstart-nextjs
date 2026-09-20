@@ -18,7 +18,8 @@ client and clear an active in-memory RTC session.
 
 ## Modify The RTC Core Flow
 
-Inspect `components/channel-call.tsx`, `lib/token.ts`, and the token route. Preserve the
+Inspect `components/agora-runtime.tsx`, `components/channel-call.tsx`, `lib/token.ts`,
+and the token route. Preserve the
 RTC invariants, run focused runtime checks and `pnpm run verify`, and update
 ARCHITECTURE, RECIPE, interfaces, gotchas, and security as affected.
 
@@ -26,6 +27,12 @@ ARCHITECTURE, RECIPE, interfaces, gotchas, and security as affected.
 
 Edit `components/` and `app/`, preserve explicit join and device cleanup, update
 screenshots when stale, then run the canonical verification and relevant browser checks.
+
+For rendering changes, compare the original UI and run the component SSR tests.
+With production running, also run
+`SSR_TEST_BASE_URL=http://localhost:3000 node --test tests/ssr-html.test.mjs`.
+The first response must contain the join form, not the call interface. Verify
+hydration, cancellation and provider reuse separately from actual media.
 
 ## Change An Interface
 

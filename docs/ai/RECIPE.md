@@ -68,6 +68,11 @@ token behavior from memory.
   interrupts `play()` with a new load request, and must preserve every other
   playback rejection.
 
+- The initial server HTML contains the original join form. ChannelCall and
+  CallView support SSR without changing when they appear. Only the Agora runtime
+  uses `ssr: false`; the provider persists across leave/rejoin, while the RTC
+  controller is conditional on credentials. Player portals retain TrackBoundary.
+
 ## Stable Contracts
 
 - `POST /api/token` accepts `{ channelName, displayName }` initially or `{ channelName, userAccount }` for renewal and returns `appId`, `channelName`, `userAccount`, `token`, and `expiresIn` under `Cache-Control: no-store`.

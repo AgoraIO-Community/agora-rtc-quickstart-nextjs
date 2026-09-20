@@ -31,6 +31,12 @@
 - Abandoning a pending token request must not start a call after unmount.
 - A public demo token route has no login, channel authorization, or rate limiting.
 
+- Supporting SSR does not require rendering the call interface before Join Call.
+  Keep original display conditions; test actual first-response form HTML and
+  component server-rendering capability separately.
+- Keep the provider mounted across leave/rejoin. Only the RTC controller is
+  conditional; late updates must not revive an exited call.
+
 ## Documentation Or Contract Drift
 
 Keep package scripts, environment names, token fields, expiration, Docker port,

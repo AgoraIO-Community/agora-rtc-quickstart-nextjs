@@ -134,6 +134,18 @@ same channel and user account.
 Leaving releases tracks and leaves the channel; the provider client remains
 until the channel is unmounted.
 
+The original join form is rendered in the initial server HTML. `ChannelCall`
+and `CallView` also support server rendering; their display timing is unchanged.
+Only the Agora provider, RTC hooks and players load with `ssr: false`. Clicking
+Join Call still updates the interface in the browser; it does not request a new
+server render. The provider stays mounted until the channel page is unmounted.
+
+After starting the production app, verify the first response with:
+
+```bash
+SSR_TEST_BASE_URL=http://localhost:3000 node --test tests/ssr-html.test.mjs
+```
+
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the canonical topology and lifecycle.
 
 ## Commands
@@ -181,11 +193,13 @@ Docker, and production boundaries.
 - `app/api/token/route.ts` - RTC token issue and renewal route
 - `app/channel/[channelName]/page.tsx` - validated channel entry
 - `components/channel-experience.tsx` - named join and abortable token request
-- `components/channel-experience-loader.tsx` - browser-only RTC SDK boundary
+- `components/channel-experience-loader.tsx` - SSR-compatible experience and playback guard
 - `components/join-channel.tsx` - display-name and invitation form
 - `components/invite-button.tsx` - shared invitation copy and feedback
 - `components/call-view.tsx` - one-to-one call layout
-- `components/channel-call.tsx` - React RTC lifecycle and partial media
+- `components/channel-call.tsx` - original joining/call presentation
+- `components/agora-runtime-loader.tsx` - browser-only SDK boundary
+- `components/agora-runtime.tsx` - page-scoped provider, RTC hooks and players
 - `lib/media-devices.ts` - device switching and change listeners
 - `lib/rtc-identity.ts` - display-name validation and RTC account encoding
 - `docs/ai/` - progressive coding-agent context

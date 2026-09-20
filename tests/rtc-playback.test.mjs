@@ -3,17 +3,13 @@ import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { isExpectedMediaPlaybackInterruption } from '../lib/media-playback.ts';
 
-test('keeps RTC track players stable across React re-renders', async () => {
-  const [channelCall, videoTile] = await Promise.all([
-    readFile(new URL('../components/channel-call.tsx', import.meta.url), 'utf8'),
-    readFile(new URL('../components/video-tile.tsx', import.meta.url), 'utf8'),
-  ]);
-
-  assert.match(channelCall, /<TrackBoundary>/);
-  assert.match(channelCall, /<\/TrackBoundary>/);
-  assert.doesNotMatch(videoTile, /videoPlayerConfig=\{\{/);
-  assert.match(videoTile, /videoPlayerConfig=\{LOCAL_VIDEO_PLAYER_CONFIG\}/);
-  assert.match(videoTile, /videoPlayerConfig=\{REMOTE_VIDEO_PLAYER_CONFIG\}/);
+test('declares shared player context and stable configuration in the browser runtime', async () => {
+  const runtime = await readFile(new URL('../components/agora-runtime.tsx', import.meta.url), 'utf8');
+  assert.match(runtime, /<TrackBoundary>/);
+  assert.match(runtime, /<\/TrackBoundary>/);
+  assert.doesNotMatch(runtime, /videoPlayerConfig=\{\{/);
+  assert.match(runtime, /videoPlayerConfig=\{LOCAL_VIDEO_PLAYER_CONFIG\}/);
+  assert.match(runtime, /videoPlayerConfig=\{REMOTE_VIDEO_PLAYER_CONFIG\}/);
 });
 
 test('recognizes only the benign browser interruption emitted during RTC teardown', () => {

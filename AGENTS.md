@@ -33,7 +33,7 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 - HTTP token contract: `app/api/token/route.ts`
 - RTC token construction: `lib/token.ts`
 - browser token client: `lib/token-client.ts`
-- RTC lifecycle: `components/channel-call.tsx`
+- RTC lifecycle: `components/agora-runtime.tsx`
 - device switching and change listeners: `lib/media-devices.ts`
 - channel-name validation: `lib/channel-name.ts`
 - display-name and RTC account identity: `lib/rtc-identity.ts`
@@ -41,12 +41,14 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 ## Key Files
 
 - `components/channel-experience.tsx` - named join and abortable token request
-- `components/channel-experience-loader.tsx` - browser-only RTC SDK boundary
+- `components/channel-experience-loader.tsx` - SSR-compatible experience and playback guard
 - `components/join-channel.tsx` - display-name and invitation form
 - `components/call-view.tsx` - waiting and peer-present call layout
 - `components/invite-button.tsx` - invitation copy and user feedback
 - `app/api/token/route.ts` - initial named account token and same-account renewal
-- `components/channel-call.tsx` - React RTC hooks, renewal, devices, and call view
+- `components/channel-call.tsx` - original joining/call presentation
+- `components/agora-runtime-loader.tsx` - browser-only dynamic boundary
+- `components/agora-runtime.tsx` - page-scoped provider, RTC hooks, renewal and players
 - `scripts/doctor.mjs` - local runtime and environment checks
 - `ARCHITECTURE.md` - canonical runtime and ownership model
 - `docs/ai/RECIPE.md` - extension points, invariants, and stable contracts
@@ -78,6 +80,13 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
     configuration objects so React re-renders do not interrupt active playback.
 14. Suppress only the browser's exact expected `AbortError` for a `play()` call
     interrupted by RTC teardown; surface every other unhandled rejection.
+
+15. Preserve the original UI and display conditions. The first server HTML contains
+    only the join form; SSR support must not make the call interface appear early.
+16. Keep presentation outside `ssr: false`; isolate only Agora runtime imports.
+    Keep the provider mounted across leave/rejoin and hooks scoped to credentials.
+17. Video player portals retain the shared TrackBoundary. Do not change tile
+    dimensions, track ownership or player configuration while changing rendering.
 
 ## UI Contract
 
