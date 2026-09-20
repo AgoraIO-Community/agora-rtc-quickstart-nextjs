@@ -10,6 +10,12 @@
 account returns 400. Missing configuration or token failure returns a generic
 500. Every response uses `Cache-Control: no-store`.
 
+`POST /api/call-entry` accepts same-origin JSON `{ channelName, displayName }` and
+returns `{ url }` plus a 120-second HttpOnly cookie scoped to the call path. The
+call document consumes this browser handoff and clears the cookie on its response.
+It is form data, not authentication. Invalid origin/input returns 403/400; non-JSON
+returns 415. All responses use `Cache-Control: no-store`.
+
 ## Events And Media
 
 React SDK hooks handle join, independent audio/video subscriptions, playback,

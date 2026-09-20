@@ -8,6 +8,7 @@ import { DeviceSelect } from '@/components/device-select';
 import { InviteButton } from '@/components/invite-button';
 
 type CallControlsProps = {
+  invitePath?: string;
   microphones: MediaDeviceInfo[];
   cameras: MediaDeviceInfo[];
   microphoneId: string;
@@ -24,6 +25,7 @@ type CallControlsProps = {
 };
 
 export function CallControls({
+  invitePath,
   microphones,
   cameras,
   microphoneId,
@@ -76,6 +78,7 @@ export function CallControls({
               size="icon"
               onClick={() => setSettingsOpen((open) => !open)}
               aria-label="Select devices"
+              disabled={!microphoneAvailable && !cameraAvailable}
               aria-expanded={settingsOpen}
             >
               <Settings className="h-4 w-4" />
@@ -101,7 +104,7 @@ export function CallControls({
           )}
         </div>
 
-        <InviteButton iconOnly />
+        <InviteButton iconOnly invitePath={invitePath} />
         <ControlTooltip label="Leave call">
           <Button variant="destructive" size="icon" onClick={onLeave} aria-label="Leave call">
             <PhoneOff className="h-4 w-4" />

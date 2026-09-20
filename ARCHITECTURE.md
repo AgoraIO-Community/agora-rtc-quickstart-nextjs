@@ -28,7 +28,7 @@ canonical lowercase UUID and mounts `components/channel-experience.tsx`.
 `components/channel-experience-loader.tsx` renders the experience without disabling
 SSR. The original independent join form is in the first HTML response.
 `components/agora-runtime-loader.tsx` dynamically loads only the Agora runtime
-with `ssr: false`, allowing the provider client to load before Join Call.
+with `ssr: false` on the call page after explicit Join Call.
 Development uses the Next.js 16 default Turbopack runtime; the Webpack dev
 runtime can reload an active channel when another browser first compiles `/`.
 
@@ -55,18 +55,18 @@ runtime can reload an active channel when another browser first compiles `/`.
 
 ## Ownership Boundaries
 
-- `components/channel-experience.tsx` owns named join, device initialization after
-  join, and the `setup`, `joining`, and `connected` UI phases.
+- `components/channel-experience.tsx` owns named join and the entry request.
+- `components/call-experience.tsx` owns browser token requests, call state and exit.
 - `components/join-channel.tsx` owns the display-name and invitation form.
-- `components/channel-call.tsx` retains the original joining-versus-call display
-  condition: show the joining form until either local track exists.
+- `components/channel-call.tsx` renders the connecting and call layout, including
+  the server-rendered shell before tracks exist.
 - `components/agora-runtime.tsx` owns the page-scoped provider, React SDK hooks,
   device operations, token renewal and players. Its controller mounts only with
-  credentials, while the provider remains mounted across leave/rejoin.
+  credentials; each full call-page navigation creates a new provider.
 - `lib/media-devices.ts` supports switching, enablement, and device-change listeners.
 - `app/api/token/route.ts` owns the HTTP request and response contract.
 - `lib/token.ts` owns RTC publisher token construction and expiration.
-- `components/channel-experience-loader.tsx` retains the page-scoped playback guard.
+- `app/channel/[channelName]/layout.tsx` retains the channel-scoped playback guard.
 - Agora owns channel transport and remote media delivery. The application has no
   channel database or persistent session service.
 
@@ -90,7 +90,7 @@ microphone does not block the other available media type. Device changes refresh
 the available list; manual selection is available during the call.
 Track players share a `TrackBoundary`, and video-player configuration objects
 remain referentially stable so render-only updates do not interrupt playback.
-The channel loader keeps a route-scoped rejection guard mounted across call teardown.
+The channel layout keeps a route-scoped rejection guard mounted across call teardown.
 It ignores only the browser's expected `play()`-interrupted-by-new-load
 `AbortError` at the media-play promise boundary; all other playback failures and
 unhandled rejections continue to surface.
@@ -99,21 +99,31 @@ not routed to the application's fatal error banner.
 
 ## Rendering boundary
 
-ChannelCall, CallView and VideoTile are SSR-compatible Client Components. Their
-original layouts and conditional display timing remain unchanged. On first
-navigation the form is rendered on the server; clicking Join Call changes client
-state and does not cause a new server render of the call interface.
+`/channel/[channelName]` renders the join form. Explicit Join Call posts the name
+and channel to `/api/call-entry`, which sets a random-entry-named HttpOnly cookie
+with a 120-second TTL and call-path scope. The browser performs a full document
+navigation to `/channel/[channelName]/call?entry=...`; this page server-renders
+ChannelCall and CallView visibly, with no tracks and disabled device controls.
+Hydration starts the existing token request, then activates the browser RTC runtime.
 
-ChannelExperience passes the existing CallView props from the browser controller
-to the presentation branch. Current-account checks discard stale callbacks after
-leave. The browser controller stays outside that branch, beneath the persistent
-Agora provider. It uses two local portals to put video players in the original
-tiles while retaining the shared TrackBoundary and stable player configuration.
-No SDK objects are serialized from a Server Component. Type-only SDK imports in
-presentation files do not load the runtime.
+`proxy.ts` accepts full HTML document requests and clears the entry cookie on the
+response without modifying the forwarded request. Missing/expired entries redirect
+to the join page; prefetch and RSC requests cannot consume entries. Responses are
+not cacheable. Entry fields are revalidated; this handoff is not authentication or
+an atomic server-side anti-replay mechanism. Cookies are independent per entry.
 
-Test initial form HTML separately from the display components' ability to render
-in Node. Neither proves live media playback or two-client success.
+Each call document owns one provider. Exiting clears credentials and navigates to
+the join page; sessionStorage carries the name/error once and is immediately
+consumed there. Refresh/direct access has no entry cookie and does not reconnect.
+BFCache restoration returns to the join page. Invitations always use the join URL.
+`app/channel/[channelName]/layout.tsx` retains the playback guard across exit.
+
+ChannelExperience owns the join form and abortable entry request; CallExperience
+owns token requests, call state and stale callback rejection. ChannelCall renders
+the connecting shell before either local track exists. Presentation imports SDK
+types only. AgoraRuntimeLoader alone uses `ssr: false`; player portals retain the
+shared TrackBoundary and stable configurations. No SDK object crosses the server
+boundary. Complete document HTML, hydration and two-client media are separate gates.
 
 ## Runtime Modes
 

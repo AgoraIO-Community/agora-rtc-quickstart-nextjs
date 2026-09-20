@@ -17,11 +17,11 @@ docs/ai/      progressive coding-agent context
 ## Core Files
 
 - `app/api/token/route.ts`: HTTP token contract
-- `components/channel-experience.tsx`: named join and abortable token request
-- `components/channel-call.tsx`: original joining/call display conditions
+- `components/channel-experience.tsx`: named join and abortable entry request
+- `components/channel-call.tsx`: server-rendered connecting/call presentation
 - `components/agora-runtime.tsx`: persistent provider, RTC hooks, devices and players
 - `components/agora-runtime-loader.tsx`: browser-only dynamic boundary
-- `components/channel-experience-loader.tsx`: SSR-compatible experience and playback guard
+- `components/channel-experience-loader.tsx`: SSR join experience
 - `components/join-channel.tsx`: display-name and invitation form
 - `lib/token.ts`: publisher token construction
 - `lib/media-devices.ts`: device switching and change listeners

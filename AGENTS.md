@@ -40,13 +40,17 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 
 ## Key Files
 
-- `components/channel-experience.tsx` - named join and abortable token request
-- `components/channel-experience-loader.tsx` - SSR-compatible experience and playback guard
+- `components/channel-experience.tsx` - named join and abortable entry request
+- `components/channel-experience-loader.tsx` - SSR join experience
+- `app/channel/[channelName]/layout.tsx` - playback guard across call teardown
 - `components/join-channel.tsx` - display-name and invitation form
 - `components/call-view.tsx` - waiting and peer-present call layout
 - `components/invite-button.tsx` - invitation copy and user feedback
 - `app/api/token/route.ts` - initial named account token and same-account renewal
-- `components/channel-call.tsx` - original joining/call presentation
+- `components/channel-call.tsx` - SSR connecting/call presentation
+- `components/call-experience.tsx` - browser token request, RTC state and exit
+- `app/channel/[channelName]/call/page.tsx` - request-scoped call SSR
+- `app/api/call-entry/route.ts` and `proxy.ts` - short-lived entry handoff and response cleanup
 - `components/agora-runtime-loader.tsx` - browser-only dynamic boundary
 - `components/agora-runtime.tsx` - page-scoped provider, RTC hooks, renewal and players
 - `scripts/doctor.mjs` - local runtime and environment checks
@@ -81,10 +85,14 @@ This repository is the Agora RTC Web one-to-one quickstart for Next.js.
 14. Suppress only the browser's exact expected `AbortError` for a `play()` call
     interrupted by RTC teardown; surface every other unhandled rejection.
 
-15. Preserve the original UI and display conditions. The first server HTML contains
-    only the join form; SSR support must not make the call interface appear early.
+15. The join page renders only the form. After explicit Join Call, perform a full
+    document navigation to `/channel/[channelName]/call`; its server HTML contains
+    visible ChannelCall and CallView, including the connecting state before tracks exist.
+    A short-lived entry cookie is cleared in that response, so refresh/direct access
+    returns to the join page. Invitation links always target the join page.
 16. Keep presentation outside `ssr: false`; isolate only Agora runtime imports.
-    Keep the provider mounted across leave/rejoin and hooks scoped to credentials.
+    Keep one provider per call document and hooks scoped to credentials. Full
+    navigation creates a new client; do not require cross-document provider reuse.
 17. Video player portals retain the shared TrackBoundary. Do not change tile
     dimensions, track ownership or player configuration while changing rendering.
 

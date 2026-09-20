@@ -18,7 +18,7 @@ video-player configuration objects.
 
 Keep presentation SSR-compatible using existing props and type-only SDK imports.
 Do not move display components inside the browser-only runtime, change the UI,
-or shorten the provider lifetime. Portals keep players beneath TrackBoundary.
+or recreate the provider within one call document. Portals keep players beneath TrackBoundary.
 
 ## Verification Patterns
 

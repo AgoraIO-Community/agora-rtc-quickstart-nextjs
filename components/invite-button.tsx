@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { ControlTooltip } from '@/components/ui/control-tooltip';
 
 type InviteButtonProps = {
+  invitePath?: string;
   label?: string;
   iconOnly?: boolean;
   className?: string;
 };
 
 export function InviteButton({
+  invitePath,
   label = 'Copy invite link',
   iconOnly = false,
   className,
@@ -21,7 +23,7 @@ export function InviteButton({
 
   const copyInvite = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(new URL(invitePath ?? window.location.pathname, window.location.origin).href);
       setFailed(false);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);

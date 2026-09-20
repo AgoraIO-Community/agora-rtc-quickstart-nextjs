@@ -68,9 +68,11 @@ token behavior from memory.
   interrupts `play()` with a new load request, and must preserve every other
   playback rejection.
 
-- The initial server HTML contains the original join form. ChannelCall and
-  CallView support SSR without changing when they appear. Only the Agora runtime
-  uses `ssr: false`; the provider persists across leave/rejoin, while the RTC
+- The join-page HTML contains only the form. Explicit Join Call creates a short-lived
+  entry cookie and fully navigates to the call page, whose HTML actually renders
+  visible ChannelCall and CallView before tracks exist. The response clears the
+  cookie so refresh/direct access returns to the form. Invitations target the join URL.
+  Only Agora runtime uses `ssr: false`; each call document owns one provider and its
   controller is conditional on credentials. Player portals retain TrackBoundary.
 
 ## Stable Contracts

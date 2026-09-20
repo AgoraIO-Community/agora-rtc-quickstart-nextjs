@@ -51,9 +51,11 @@ export function CallView({
   onLeave,
   localPlayerRef,
   remotePlayerRef,
+  invitePath,
 }: CallViewProps & {
   localPlayerRef?: RefCallback<HTMLDivElement>;
   remotePlayerRef?: RefCallback<HTMLDivElement>;
+  invitePath?: string;
 }) {
   const remoteUser = remoteUsers[0] ?? null;
   const remoteDisplayName = remoteUser
@@ -92,12 +94,13 @@ export function CallView({
             remoteUser={remoteUser}
             videoEnabled={Boolean(remoteUser?.videoTrack)}
             waitingMessage="Waiting for another participant"
-            waitingAction={remoteUser ? null : <InviteButton label="Invite participant" />}
+            waitingAction={remoteUser ? null : <InviteButton label="Invite participant" invitePath={invitePath} />}
           />
         </div>
 
         <div className="shrink-0 pb-2 pt-4">
           <CallControls
+            invitePath={invitePath}
             microphones={microphones}
             cameras={cameras}
             microphoneId={microphoneId}

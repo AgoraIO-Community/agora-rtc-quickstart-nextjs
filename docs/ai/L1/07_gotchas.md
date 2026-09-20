@@ -24,18 +24,20 @@
 - Recreating video-player configuration objects can stop and reload a playing
   media element; keep them stable and retain the shared `TrackBoundary`.
 - Leaving a joined call destroys Agora-owned media elements and Chrome can reject
-  an internal `play()` with its expected new-load `AbortError`. The channel loader's
+  an internal `play()` with its expected new-load `AbortError`. The channel layout's
   playback guard must remain mounted through teardown and match only that exact
   rejection so unrelated failures remain visible.
 - Do not manually leave or close tracks owned by React SDK hooks.
 - Abandoning a pending token request must not start a call after unmount.
 - A public demo token route has no login, channel authorization, or rate limiting.
 
-- Supporting SSR does not require rendering the call interface before Join Call.
-  Keep original display conditions; test actual first-response form HTML and
-  component server-rendering capability separately.
-- Keep the provider mounted across leave/rejoin. Only the RTC controller is
-  conditional; late updates must not revive an exited call.
+- A soft router navigation is not proof of Client Component HTML SSR. Join Call
+  performs full document navigation; verify visible CallView HTML in that response.
+- The call shell appears before tracks exist. The join page contains only the form.
+  Each new call document creates one provider; late updates cannot revive an exited call.
+- Clear entry cookies only on the outgoing document response, not the forwarded
+  request. Refresh/direct access returns to the form; entry cookies are not authentication.
+- Invite buttons must use the join URL, never the call URL containing an entry ID.
 
 ## Documentation Or Contract Drift
 

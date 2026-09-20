@@ -1,119 +1,63 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { JoinChannel } from '@/components/join-channel';
-import { ChannelCall } from '@/components/channel-call';
-import type { CallViewProps } from '@/components/call-view';
-import { AgoraRuntimeLoader } from '@/components/agora-runtime-loader';
 import { isValidDisplayName, normalizeDisplayName } from '@/lib/rtc-identity';
-import { requestRtcToken, type RtcTokenResponse } from '@/lib/token-client';
+import { takeCallReturn } from '@/lib/call-return';
 
 export function ChannelExperience({ channelName }: { channelName: string }) {
   const [displayName, setDisplayName] = useState('');
-  const [credentials, setCredentials] = useState<RtcTokenResponse | null>(null);
   const [joining, setJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const request = useRef<AbortController | null>(null);
-  const mounted = useRef(false);
-  const currentAccount = useRef<string | null>(null);
-  const [call, setCall] = useState<CallViewProps | null>(null);
-  const [localTarget, setLocalTarget] = useState<HTMLDivElement | null>(null);
-  const [remoteTarget, setRemoteTarget] = useState<HTMLDivElement | null>(null);
-  const [runtimeError, setRuntimeError] = useState<string | null>(null);
 
   useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-      currentAccount.current = null;
+    const returned = takeCallReturn(channelName);
+    if (returned) {
+      // Restore a one-use handoff only after hydration; the initial form stays SSR-stable.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDisplayName(returned.displayName);
+      setError(returned.error ?? null);
+    }
+    const restored = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
       request.current?.abort();
+      request.current = null;
+      setJoining(false);
     };
-  }, []);
+    window.addEventListener('pageshow', restored);
+    return () => {
+      request.current?.abort();
+      request.current = null;
+      window.removeEventListener('pageshow', restored);
+    };
+  }, [channelName]);
 
   const join = async () => {
-    if (joining || credentials || !isValidDisplayName(displayName)) return;
-    if (runtimeError) { setError(runtimeError); return; }
-    const name = normalizeDisplayName(displayName);
+    if (request.current || !isValidDisplayName(displayName)) return;
     const controller = new AbortController();
     request.current = controller;
-    setDisplayName(name);
     setJoining(true);
     setError(null);
     try {
-      const result = await requestRtcToken(channelName, { displayName: name }, fetch, controller.signal);
-      if (mounted.current && !controller.signal.aborted) {
-        currentAccount.current = result.userAccount;
-        setCredentials(result);
-      }
+      const response = await fetch('/api/call-entry', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ channelName, displayName: normalizeDisplayName(displayName) }),
+        signal: controller.signal, cache: 'no-store',
+      });
+      if (!response.ok) throw new Error('Unable to open the call. Please try again.');
+      const result = await response.json();
+      if (!controller.signal.aborted && request.current === controller) window.location.assign(result.url);
     } catch (nextError) {
-      if (mounted.current && !controller.signal.aborted) {
-        setError(nextError instanceof Error ? nextError.message : 'Unable to join the channel.');
+      if (!controller.signal.aborted && request.current === controller) {
+        setError(nextError instanceof Error ? nextError.message : 'Unable to open the call.');
+        request.current = null;
+        setJoining(false);
       }
-    } finally {
-      if (request.current === controller) request.current = null;
-      if (mounted.current && !controller.signal.aborted) setJoining(false);
     }
   };
+  const cancel = () => { request.current?.abort(); request.current = null; setJoining(false); };
 
-  const leave = useCallback((nextError?: string) => {
-    currentAccount.current = null;
-    setCall(null);
-    setCredentials(null);
-    setJoining(false);
-    setError(nextError ?? null);
-  }, []);
-
-  const cancel = () => {
-    request.current?.abort();
-    request.current = null;
-    setJoining(false);
-  };
-
-  const updateCall = useCallback((account: string, nextCall: CallViewProps) => {
-    if (mounted.current && currentAccount.current === account) setCall(nextCall);
-  }, []);
-
-  const runtimeLeave = useCallback((account: string, message?: string) => {
-    if (mounted.current && currentAccount.current === account) leave(message);
-  }, [leave]);
-
-  const runtimeFailed = useCallback((message: string) => {
-    request.current?.abort();
-    request.current = null;
-    setRuntimeError(message);
-    leave(message);
-  }, [leave]);
-
-  return (
-    <>
-      {credentials ? (
-        <ChannelCall
-          key={credentials.userAccount}
-          displayName={displayName}
-          call={call}
-          onLeave={() => leave()}
-          localPlayerRef={setLocalTarget}
-          remotePlayerRef={setRemoteTarget}
-        />
-      ) : (
-        <JoinChannel
-          displayName={displayName}
-          joining={joining}
-          error={error}
-          onDisplayNameChange={setDisplayName}
-          onJoin={() => void join()}
-          onCancel={joining ? cancel : undefined}
-        />
-      )}
-      <AgoraRuntimeLoader
-        credentials={credentials}
-        displayName={displayName}
-        localTarget={localTarget}
-        remoteTarget={remoteTarget}
-        onUpdate={updateCall}
-        onLeave={runtimeLeave}
-        onError={runtimeFailed}
-      />
-    </>
-  );
+  return <JoinChannel displayName={displayName} joining={joining} error={error}
+    onDisplayNameChange={setDisplayName} onJoin={() => void join()} onCancel={joining ? cancel : undefined} />;
 }

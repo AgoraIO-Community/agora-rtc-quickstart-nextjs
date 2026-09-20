@@ -30,12 +30,12 @@ test('recognizes only the benign browser interruption emitted during RTC teardow
 test('keeps the playback rejection guard mounted outside the call session', async () => {
   const [guard, loader] = await Promise.all([
     readFile(new URL('../components/media-playback-guard.tsx', import.meta.url), 'utf8'),
-    readFile(new URL('../components/channel-experience-loader.tsx', import.meta.url), 'utf8'),
+    readFile(new URL('../app/channel/[channelName]/layout.tsx', import.meta.url), 'utf8'),
   ]);
 
   assert.match(guard, /event\.preventDefault\(\)/);
   assert.match(guard, /event\.stopImmediatePropagation\(\)/);
   assert.match(guard, /HTMLMediaElement\.prototype\.play = function guardedPlay/);
   assert.match(guard, /HTMLMediaElement\.prototype\.play = originalPlay/);
-  assert.match(loader, /<MediaPlaybackGuard\s*\/>[\s\S]*<ChannelExperience channelName=\{channelName\}/);
+  assert.match(loader, /<MediaPlaybackGuard\s*\/>\{children\}/);
 });

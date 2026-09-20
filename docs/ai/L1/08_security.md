@@ -22,6 +22,12 @@ encoded user-entered display name, publisher role, and 3600-second relative
 expiration. Display names are visible to other channel participants. The demo has
 no application login, channel authorization, server-controlled identity, or rate limiting.
 
+Call-entry cookies transport untrusted name/channel data, not authorization or
+server-side anti-replay state. They are HttpOnly, SameSite=Lax, Secure on HTTPS,
+call-path scoped, expire after 120 seconds, and are cleared in the call response.
+Entry creation requires a same-origin JSON request. No tokens or certificates
+are stored in the entry cookie or URL.
+
 ## Input And Output Handling
 
 The token route rejects malformed JSON and invalid channel/name/account input. Responses are

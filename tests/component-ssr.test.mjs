@@ -22,13 +22,15 @@ const view = {
   onCameraToggle: noop, onLeave: noop,
 };
 
-test('ChannelCall server-renders the original joining state without RTC tracks', () => {
+test('ChannelCall server-renders the visible connecting interface without RTC tracks', () => {
   assert.equal(typeof window, 'undefined');
   const html = renderToStaticMarkup(React.createElement(ChannelCall, { displayName: 'SSR tester', call: null, onLeave: noop }));
-  assert.match(html, /Join the call/);
-  assert.match(html, /Joining\.\.\./);
-  assert.match(html, /Cancel/);
-  assert.doesNotMatch(html, /aria-label="[^"]* video"/);
+  assert.match(html, /Agora Video Calling/);
+  assert.match(html, /Connecting/);
+  assert.match(html, /aria-label="Leave call"/);
+  assert.equal((html.match(/data-player-target/g) ?? []).length, 2);
+  assert.doesNotMatch(html, /<main[^>]*\shidden(?:=|[ >])|name="participant-name"/);
+  assert.match(html, /disabled=""[^>]*aria-label="Unmute microphone"/);
 });
 
 test('CallView can server-render its original waiting interface without SDK execution', () => {
@@ -43,7 +45,7 @@ test('CallView can server-render its original waiting interface without SDK exec
   assert.equal(Object.keys(require.cache).some(path => /agora-rtc-(react|sdk)/.test(path)), false);
 });
 
-test('ChannelCall preserves the either-local-track condition for displaying the call', () => {
+test('ChannelCall renders with either local media type', () => {
   // Opaque fixture handles model availability; no SDK track is created or played.
   for (const media of [{ microphone: {}, camera: null }, { microphone: null, camera: {} }]) {
     const html = renderToStaticMarkup(React.createElement(ChannelCall, {

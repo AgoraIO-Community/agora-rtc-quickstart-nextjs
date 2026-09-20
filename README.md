@@ -131,16 +131,28 @@ account, and returns a non-cacheable RTC token.
 The React SDK joins, creates and publishes local tracks, and subscribes to
 remote audio and video independently. Token renewal reuses the
 same channel and user account.
-Leaving releases tracks and leaves the channel; the provider client remains
-until the channel is unmounted.
+Leaving releases tracks and returns to the channel join page with the name retained.
+Each full navigation into a call creates a new provider client.
 
-The original join form is rendered in the initial server HTML. `ChannelCall`
-and `CallView` also support server rendering; their display timing is unchanged.
-Only the Agora provider, RTC hooks and players load with `ssr: false`. Clicking
-Join Call still updates the interface in the browser; it does not request a new
-server render. The provider stays mounted until the channel page is unmounted.
+The join page renders the form on the server. Clicking **Join Call** creates a
+120-second entry cookie via `POST /api/call-entry`, then performs a full document
+navigation to `/channel/<channel-name>/call?entry=...`. That response contains
+visible server-rendered `ChannelCall` and `CallView`, initially in the connecting
+state. Only the Agora provider, RTC hooks and players use `ssr: false`; token
+requests and device access start in the browser after hydration.
 
-After starting the production app, verify the first response with:
+The call response clears the entry cookie. Refreshing or directly opening the call
+page returns to the join form without reconnecting. Hanging up returns to that
+form and retains the name once; refreshing the form clears it. Invite buttons
+always copy the join-page URL. Entry cookies carry form data, not authentication.
+The name handoff on exit uses optional sessionStorage; if storage is blocked,
+exit still works but the name cannot be retained.
+
+The connecting screen below is rendered in the call document before media starts:
+
+![Server-rendered connecting screen](.github/assets/rtc-nextjs-connecting.png)
+
+After starting the production app, verify the document responses with:
 
 ```bash
 SSR_TEST_BASE_URL=http://localhost:3000 node --test tests/ssr-html.test.mjs
@@ -192,12 +204,14 @@ Docker, and production boundaries.
 
 - `app/api/token/route.ts` - RTC token issue and renewal route
 - `app/channel/[channelName]/page.tsx` - validated channel entry
-- `components/channel-experience.tsx` - named join and abortable token request
-- `components/channel-experience-loader.tsx` - SSR-compatible experience and playback guard
+- `components/channel-experience.tsx` - named join and abortable entry request
+- `components/call-experience.tsx` - SSR call shell and browser RTC session
+- `components/channel-experience-loader.tsx` - SSR join experience
+- `app/channel/[channelName]/layout.tsx` - persistent playback guard
 - `components/join-channel.tsx` - display-name and invitation form
 - `components/invite-button.tsx` - shared invitation copy and feedback
 - `components/call-view.tsx` - one-to-one call layout
-- `components/channel-call.tsx` - original joining/call presentation
+- `components/channel-call.tsx` - server-rendered connecting/call presentation
 - `components/agora-runtime-loader.tsx` - browser-only SDK boundary
 - `components/agora-runtime.tsx` - page-scoped provider, RTC hooks and players
 - `lib/media-devices.ts` - device switching and change listeners

@@ -31,8 +31,9 @@ screenshots when stale, then run the canonical verification and relevant browser
 For rendering changes, compare the original UI and run the component SSR tests.
 With production running, also run
 `SSR_TEST_BASE_URL=http://localhost:3000 node --test tests/ssr-html.test.mjs`.
-The first response must contain the join form, not the call interface. Verify
-hydration, cancellation and provider reuse separately from actual media.
+The join response contains only the form; the entry-authorized call response must
+contain visible call HTML and clear its cookie. Verify refresh redirects, hydration,
+cancellation, exit/name retention and invitation URLs separately from actual media.
 
 ## Change An Interface
 
