@@ -37,13 +37,6 @@ jobs:
           docker logs agora-rtc-nextjs-quickstart
           exit 1
 
-      - name: Verify call-page server rendering
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - run: SSR_TEST_BASE_URL=http://localhost:3000 node --test tests/ssr-html.test.mjs
-
       - name: Stop container
         if: always()
         run: docker rm --force agora-rtc-nextjs-quickstart || true

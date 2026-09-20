@@ -148,10 +148,6 @@ always copy the join-page URL. Entry cookies carry form data, not authentication
 The name handoff on exit uses optional sessionStorage; if storage is blocked,
 exit still works but the name cannot be retained.
 
-The connecting screen below is rendered in the call document before media starts:
-
-![Server-rendered connecting screen](.github/assets/rtc-nextjs-connecting.png)
-
 After starting the production app, verify the document responses with:
 
 ```bash

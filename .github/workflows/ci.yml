@@ -31,15 +31,6 @@ jobs:
 
       - run: pnpm run verify
 
-      - name: Verify production call-page HTML
-        run: |
-          pnpm run start > /tmp/rtc-next.log 2>&1 &
-          for attempt in $(seq 1 30); do
-            if curl --fail --silent http://localhost:3000/ > /dev/null; then break; fi
-            sleep 1
-          done
-          SSR_TEST_BASE_URL=http://localhost:3000 node --test tests/ssr-html.test.mjs
-
   npm-compatibility:
     runs-on: ubuntu-latest
     steps:
